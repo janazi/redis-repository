@@ -1,5 +1,5 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+This project is about a way to use Redis as a NoSQL Database, not only as cache. It make easy to create keys in the right way, with index.
 
 # Getting Started
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
