@@ -1,7 +1,7 @@
-﻿using Super.RedisRepository.Interfaces;
+﻿using Jnz.RedisRepository.Interfaces;
 using System;
 
-namespace Super.RedisRepository.Benchmark
+namespace Jnz.RedisRepository.Benchmark
 {
     //[MessagePackObject]
     public class Pessoa : IRedisCacheable

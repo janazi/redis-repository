@@ -4,7 +4,7 @@ using StackExchange.Redis;
 using System;
 using System.Threading.Tasks;
 
-namespace Super.RedisRepository.Benchmark
+namespace Jnz.RedisRepository.Benchmark
 {
     class Program
     {

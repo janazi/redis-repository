@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using MessagePack;
 
-namespace Super.RedisRepository.Benchmark
+namespace Jnz.RedisRepository.Benchmark
 {
     [MemoryDiagnoser]
     public class MessagePackContractlessStandarResolverBenchmark
@@ -40,14 +40,14 @@ namespace Super.RedisRepository.Benchmark
         [Benchmark(Baseline = true)]
         public void ContractlessStandardResolver()
         {
-            var bytes = MessagePackSerializer.Serialize(_target, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+            var bytes = MessagePackSerializer.Serialize(_target, MessagePack.Resolvers.ContractlessStandardResolver.Options);
 
         }
 
         [Benchmark]
         public void StandardResolver()
         {
-            var bytes = MessagePackSerializer.Serialize(_targetStandard, MessagePack.Resolvers.StandardResolver.Instance);
+            var bytes = MessagePackSerializer.Serialize(_targetStandard, MessagePack.Resolvers.StandardResolver.Options);
 
         }
     }

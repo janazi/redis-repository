@@ -1,14 +1,22 @@
 ﻿using MessagePack;
 using MessagePack.Resolvers;
-using Super.RedisRepository.Interfaces;
+using Jnz.RedisRepository.Interfaces;
 
-namespace Super.RedisRepository
+namespace Jnz.RedisRepository
 {
     public class RedisSerializer : ISerializer
     {
         public RedisSerializer(IFormatterResolver formatterResolver)
         {
-            CompositeResolver.RegisterAndSetAsDefault(NativeDateTimeResolver.Instance, formatterResolver);
+            StaticCompositeResolver.Instance.Register(NativeDateTimeResolver.Instance, formatterResolver);
+
+            var option = MessagePackSerializerOptions.Standard.WithResolver(StaticCompositeResolver.Instance);
+
+            MessagePackSerializer.DefaultOptions = option;
+
+            //var options = MessagePackSerializerOptions.Standard.WithResolver(NativeDateTimeResolver.Instance);
+            //MessagePackSerializer.DefaultOptions = options;
+            //CompositeResolver.RegisterAndSetAsDefault(NativeDateTimeResolver.Instance, formatterResolver);
         }
 
         public T DeserializeAsync<T>(byte[] bytes)

@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Super.RedisRepository.Extensions;
-using Super.RedisRepository.Interfaces;
+using Jnz.RedisRepository.Extensions;
+using Jnz.RedisRepository.Interfaces;
 using System;
 
 namespace RedisManager.Tests

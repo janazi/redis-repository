@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Super.RedisRepository.Interfaces
+namespace Jnz.RedisRepository.Interfaces
 {
     public interface IRedisCacheable
     {

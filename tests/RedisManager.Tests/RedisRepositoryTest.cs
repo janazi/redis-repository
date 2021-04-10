@@ -1,11 +1,11 @@
+using Jnz.RedisRepository.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using RedisManager.Tests;
-using Super.RedisRepository.Interfaces;
 using System;
 using System.Linq;
 using Xunit;
 
-namespace Super.RedisRepository.Tests
+namespace Jnz.RedisRepository.Tests
 {
     public class RedisRepositoryTest : IClassFixture<Services>
     {
@@ -21,7 +21,7 @@ namespace Super.RedisRepository.Tests
             var obj = new MyObject
             {
                 Name = "Test",
-                TempoEmCache = TimeSpan.FromMilliseconds(500)
+                TempoEmCache = TimeSpan.FromMilliseconds(100)
             };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
@@ -40,7 +40,8 @@ namespace Super.RedisRepository.Tests
         {
             var obj = new MyObject
             {
-                Name = "TestLock", TempoEmCache = TimeSpan.FromMilliseconds(500)
+                Name = "TestLock",
+                TempoEmCache = TimeSpan.FromMilliseconds(100)
             };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
@@ -53,11 +54,39 @@ namespace Super.RedisRepository.Tests
             Assert.Throws<KeyLockedException>(() => redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(1)).GetAwaiter().GetResult());
         }
 
+        [Fact]
+        public void Should_Release_Lock()
+        {
+            const string key = "TestLockRelease";
+            var obj = new MyObject
+            {
+                Name = key,
+                TempoEmCache = TimeSpan.FromMilliseconds(100)
+            };
+
+            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
+
+            redisRepository.SetAsync(obj).GetAwaiter().GetResult();
+
+            var objCacheParaLock = redisRepository.GetWithLockAsync<MyObject>(key, TimeSpan.FromMilliseconds(100)).GetAwaiter()
+                .GetResult();
+
+            Assert.ThrowsAsync<KeyLockedException>(() => redisRepository.GetWithLockAsync<MyObject>(key, TimeSpan.FromMilliseconds(100)));
+
+            redisRepository.ReleaseLockAsync<MyObject>(key);
+
+            var objCacheAfterRelease = redisRepository.GetWithLockAsync<MyObject>(key, TimeSpan.FromMilliseconds(100)).GetAwaiter()
+                .GetResult();
+
+            Assert.NotNull(objCacheAfterRelease);
+
+        }
+
 
         [Fact]
         public void Should_Be_InCache_For_500ms()
         {
-            var obj = new MyObject {Name = "TestLock", TempoEmCache = TimeSpan.FromMilliseconds(500)};
+            var obj = new MyObject { Name = "TestLock", TempoEmCache = TimeSpan.FromMilliseconds(100) };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 
@@ -142,32 +171,7 @@ namespace Super.RedisRepository.Tests
             Assert.Equal(2, keys.Count());
         }
 
-        [Fact]
-        public void Deve_liberar_lock()
-        {
-            const string key = "TestLockRelease";
-            var obj = new MyObject
-            {
-                Name = key, TempoEmCache = TimeSpan.FromMilliseconds(500)
-            };
 
-            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
-
-            redisRepository.SetAsync(obj).GetAwaiter().GetResult();
-
-            var objCacheParaLock = redisRepository.GetWithLockAsync<MyObject>(key, TimeSpan.FromMilliseconds(500)).GetAwaiter()
-                .GetResult();
-
-            Assert.Throws<KeyLockedException>(() => redisRepository.GetWithLockAsync<MyObject>(key, TimeSpan.FromMilliseconds(500)).GetAwaiter().GetResult());
-
-            redisRepository.ReleaseLockAsync<MyObject>(key);
-
-            var objCacheAfterRelease = redisRepository.GetWithLockAsync<MyObject>(key, TimeSpan.FromMilliseconds(500)).GetAwaiter()
-                .GetResult();
-
-            Assert.NotNull(objCacheAfterRelease);
-
-        }
 
         [Fact]
         public void Deve_Gravar_e_Buscar_data()
@@ -177,7 +181,7 @@ namespace Super.RedisRepository.Tests
             {
                 Name = "TestData",
                 Data = DateTime.Now,
-                TempoEmCache = TimeSpan.FromMilliseconds(500)
+                TempoEmCache = TimeSpan.FromMilliseconds(100)
             };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
@@ -187,7 +191,7 @@ namespace Super.RedisRepository.Tests
             var objCache = redisRepository.GetAsync<MyObject>(obj.GetKey()).GetAwaiter()
                 .GetResult();
 
-            
+
 
             Assert.Equal(data.Hour, objCache.Data.Value.Hour);
 
@@ -197,7 +201,7 @@ namespace Super.RedisRepository.Tests
         public void Deve_Gravar_Objeto_Informando_Indice()
         {
             const string index = "NovoIndice";
-            var obj = new MyObject {Name = "Indice", TempoEmCache = TimeSpan.FromMilliseconds(500)};
+            var obj = new MyObject { Name = index, TempoEmCache = TimeSpan.FromMilliseconds(100) };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 
@@ -214,7 +218,7 @@ namespace Super.RedisRepository.Tests
         {
             const string index = "NovoIndice";
             const string hash = "Hash";
-            var obj = new MyObject { Name = "Indice", TempoEmCache = TimeSpan.FromMilliseconds(500) };
+            var obj = new MyObject { Name = "Indice", TempoEmCache = TimeSpan.FromMilliseconds(100) };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 

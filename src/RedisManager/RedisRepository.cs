@@ -1,11 +1,11 @@
 ﻿using StackExchange.Redis;
-using Super.RedisRepository.Interfaces;
+using Jnz.RedisRepository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Super.RedisRepository
+namespace Jnz.RedisRepository
 {
     public class RedisRepository : IRedisRepository
     {

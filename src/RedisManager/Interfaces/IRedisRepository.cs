@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Super.RedisRepository.Interfaces
+namespace Jnz.RedisRepository.Interfaces
 {
     public interface IRedisRepository
     {

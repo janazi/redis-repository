@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Super.RedisRepository
+namespace Jnz.RedisRepository
 {
     public class KeyLockedException : Exception
     {

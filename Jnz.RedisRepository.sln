@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28917.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Super.RedisRepository.Benchmark", "benchmark\RedisLock\Super.RedisRepository.Benchmark.csproj", "{C8D025F9-F9D0-43EA-9179-14E8776F5AE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jnz.RedisRepository.Benchmark", "benchmark\RedisLock\Jnz.RedisRepository.Benchmark.csproj", "{C8D025F9-F9D0-43EA-9179-14E8776F5AE1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Super.RedisRepository", "src\RedisManager\Super.RedisRepository.csproj", "{A802141E-DC3E-4474-86C7-2FB0686431D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jnz.RedisRepository", "src\RedisManager\Jnz.RedisRepository.csproj", "{A802141E-DC3E-4474-86C7-2FB0686431D4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Super.RedisRepository.Tests", "tests\RedisManager.Tests\Super.RedisRepository.Tests.csproj", "{7509A640-2CD1-4F03-B2EF-CEF3C05B0EFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jnz.RedisRepository.Tests", "tests\RedisManager.Tests\Jnz.RedisRepository.Tests.csproj", "{7509A640-2CD1-4F03-B2EF-CEF3C05B0EFB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{545F570B-2E50-448D-AEF8-15D1BB19EA03}"
 EndProject

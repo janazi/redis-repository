@@ -3,9 +3,9 @@ using MessagePack.Resolvers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using Super.RedisRepository.Interfaces;
+using Jnz.RedisRepository.Interfaces;
 
-namespace Super.RedisRepository.Extensions
+namespace Jnz.RedisRepository.Extensions
 {
     public static class RedisRepositoryExtensions
     {
