@@ -23,11 +23,10 @@ namespace Jnz.RedisRepository.Benchmark
                     EndPoints = { "127.0.0.1" },
                     KeepAlive = 18
                 };
-                var connectionMultiplexer = ConnectionMultiplexer.ConnectAsync(options);
-
-                var cm = ConnectionMultiplexer.Connect(options);
+                var connectionMultiplexer = await ConnectionMultiplexer.ConnectAsync(options);
                 var redisSerializer = new RedisSerializer(ContractlessStandardResolver.Instance);
-                var redisRepository = new RedisRepository(cm, redisSerializer);
+                var redisLockManager = new RedisLockManager(connectionMultiplexer);
+                var redisRepository = new RedisRepository(connectionMultiplexer, redisSerializer, redisLockManager);
 
 
 

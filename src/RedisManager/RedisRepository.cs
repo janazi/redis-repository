@@ -1,5 +1,5 @@
-﻿using StackExchange.Redis;
-using Jnz.RedisRepository.Interfaces;
+﻿using Jnz.RedisRepository.Interfaces;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +13,15 @@ namespace Jnz.RedisRepository
         private const string KeyLockDefaultPrefix = "Lock";
         private readonly IConnectionMultiplexer _connectionMultiplexer;
         private readonly ISerializer _serializer;
+        private readonly IRedisLockManager redisLockManager;
+
         private static string Token => Environment.MachineName;
         public RedisRepository(IConnectionMultiplexer connectionMultiplexer,
-            ISerializer serializer)
+            ISerializer serializer, IRedisLockManager redisLockManager)
         {
             _connectionMultiplexer = connectionMultiplexer;
             _serializer = serializer;
+            this.redisLockManager = redisLockManager;
         }
 
         public async Task SetAsync<T>(T obj)
@@ -87,24 +90,12 @@ namespace Jnz.RedisRepository
             where T : IRedisCacheable
         {
             var db = GetDatabase<T>();
-
             var fullKey = GetFullKey<T>(key);
-            var keyLock = $"{KeyLockDefaultPrefix}:{fullKey}";
             var obj = await GetAsync<T>(key);
 
-            var isLocked = db.LockTake(keyLock, Token, lockTime);
+            var isLocked = await redisLockManager.GetLockAsync(fullKey, db.Database, TimeSpan.FromSeconds(1));
             if (!isLocked) throw new KeyLockedException(LockedKeyError);
             return obj;
-        }
-
-        public async Task ReleaseLockAsync<T>(string key)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-            var token = Environment.MachineName;
-            var fullKey = GetFullKey<T>(key);
-            var keyLock = $"{KeyLockDefaultPrefix}:{fullKey}";
-            await db.LockReleaseAsync(keyLock, token);
         }
 
         public void DeleteKey<T>(string key)
@@ -147,7 +138,7 @@ namespace Jnz.RedisRepository
         {
             var config = _connectionMultiplexer.Configuration.Split(',')[0];
             var server = _connectionMultiplexer.GetServer(config);
-                
+
             var keys = server.Keys(database: dataBaseNumber, pattern: pattern, pageSize: pageSize);
 
             return keys.Select(k => k.ToString()).ToList().AsEnumerable();
@@ -226,8 +217,6 @@ namespace Jnz.RedisRepository
             return dados.IsNull ? default : _serializer.DeserializeAsync<T>(dados);
         }
 
-        
-
         public async Task SetHashAsync<T>(T obj, string key, string hash)
             where T : IRedisCacheable
         {
@@ -265,7 +254,7 @@ namespace Jnz.RedisRepository
         private static string GetFullKey<T>(string key)
            where T : IRedisCacheable
         {
-            var obj = (T) Activator.CreateInstance(typeof(T));
+            var obj = (T)Activator.CreateInstance(typeof(T));
             return $"{obj.GetIndex()}:{key}";
         }
     }

@@ -1,9 +1,9 @@
-﻿using MessagePack;
+﻿using Jnz.RedisRepository.Interfaces;
+using MessagePack;
 using MessagePack.Resolvers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using Jnz.RedisRepository.Interfaces;
 
 namespace Jnz.RedisRepository.Extensions
 {
@@ -39,6 +39,7 @@ namespace Jnz.RedisRepository.Extensions
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(options));
             services.AddSingleton<ISerializer, RedisSerializer>();
             services.AddSingleton<IRedisRepository, RedisRepository>();
+            services.AddSingleton<IRedisLockManager, RedisLockManager>();
 
             return services;
         }

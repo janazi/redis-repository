@@ -22,13 +22,6 @@ namespace Jnz.RedisRepository.Interfaces
         /// <returns></returns>
         Task<T> GetWithLockAsync<T>(string key, TimeSpan lockTime) where T : IRedisCacheable;
         /// <summary>
-        /// Efetua a liberação do lock antes do tempo informado na aquisição do mesmo.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        Task ReleaseLockAsync<T>(string key) where T : IRedisCacheable;
-        /// <summary>
         /// Obtêm um objeto do Redis
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -108,6 +101,6 @@ namespace Jnz.RedisRepository.Interfaces
         T Get<T>(string key, string index) where T : IRedisCacheable;
         T GetHash<T>(string key, string hash) where T : IRedisCacheable;
         T GetHash<T>(string key, string hash, string index) where T : IRedisCacheable;
-        
+
     }
 }
