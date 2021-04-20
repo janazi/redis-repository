@@ -31,11 +31,11 @@ namespace Jnz.RedisRepository.Benchmark
 
 
                 //var c = new CacheService();
-                var cpf = 27805028868;
-                var p = new Pessoa(cpf.ToString())
+                var cpf = 11111111111;
+                var p = new Pessoa()
                 {
                     Cpf = cpf,
-                    Nome = "Marcelo"
+                    Nome = "User"
                 };
 
                 var bin = redisSerializer.Serialize(p);
@@ -64,7 +64,7 @@ namespace Jnz.RedisRepository.Benchmark
 
                 var pessoaDoCache = await policy.ExecuteAsync(() => redisRepository.GetWithLockAsync<Pessoa>(cpf.ToString(), TimeSpan.FromMilliseconds(50000)));
 
-                Console.WriteLine($"CPF: {pessoaDoCache.Cpf}");
+                Console.WriteLine($"Id: {pessoaDoCache.Cpf}");
                 //await redisRepository.ReleaseLockAsync<Pessoa>(pessoaDoCache.Cpf.ToString());
             }
             catch (Exception ex)

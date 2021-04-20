@@ -7,11 +7,6 @@ namespace Jnz.RedisRepository.Benchmark
     public class Pessoa : IRedisCacheable
     {
         public Pessoa() { }
-        public Pessoa(string cpf)
-        {
-
-        }
-
         //[Key(0)]
         public string Nome { get; set; }
 
