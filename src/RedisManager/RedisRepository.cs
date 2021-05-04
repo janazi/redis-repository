@@ -151,6 +151,11 @@ namespace Jnz.RedisRepository
             return _connectionMultiplexer.GetDatabase(type.GetDatabaseNumber());
         }
 
+        private IDatabase GetDatabase(int databaseNumber)
+        {
+            return _connectionMultiplexer.GetDatabase(databaseNumber);
+        }
+
         public async Task<T> GetAsync<T>(string key)
             where T : IRedisCacheable
         {
@@ -251,7 +256,21 @@ namespace Jnz.RedisRepository
             return dados.IsNull ? default : _serializer.DeserializeAsync<T>(dados);
         }
 
-        private static string GetFullKey<T>(string key)
+        public async Task<bool> SetExpiration<T>(string key, TimeSpan expires)
+            where T : IRedisCacheable
+        {
+            var db = GetDatabase<T>();
+            var fullKey = GetFullKey<T>(key);
+            return await db.KeyExpireAsync(fullKey, expires);
+        }
+
+        public async Task<bool> SetExpiration(string fullKey, int databaseNumber, TimeSpan expires)
+        {
+            var db = GetDatabase(databaseNumber);
+            return await db.KeyExpireAsync(fullKey, expires);
+        }
+
+            private static string GetFullKey<T>(string key)
            where T : IRedisCacheable
         {
             var obj = (T)Activator.CreateInstance(typeof(T));

@@ -101,6 +101,14 @@ namespace Jnz.RedisRepository.Interfaces
         T Get<T>(string key, string index) where T : IRedisCacheable;
         T GetHash<T>(string key, string hash) where T : IRedisCacheable;
         T GetHash<T>(string key, string hash, string index) where T : IRedisCacheable;
+        Task<bool> SetExpiration<T>(string key, TimeSpan expires) where T : IRedisCacheable;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fullKey">Index + Key</param>
+        /// <param name="expires"></param>
+        /// <returns></returns>
+        Task<bool> SetExpiration(string fullKey, int databaseNumber, TimeSpan expires);
 
     }
 }
