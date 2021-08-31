@@ -26,9 +26,10 @@ namespace Jnz.RedisRepository.Extensions
             var options = new ConfigurationOptions()
             {
                 EndPoints = { uri },
-                SyncTimeout = 300000,
-                AsyncTimeout = 300000,
-                KeepAlive = 180
+                SyncTimeout = 500,
+                AsyncTimeout = 500,
+                KeepAlive = 180,
+
             };
 
             if (formatterResolver == null)
