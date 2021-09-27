@@ -3,6 +3,14 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <PackageId>Jnz.RedisRepository</PackageId>
+    <Version>1.0.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Authors>Marcelo Janazi</Authors>
+    <Company>Janazi</Company>
+    <PackageDescription>Redis Repository</PackageDescription>
+    <RepositoryUrl>https://github.com/janazi/redis-repository</RepositoryUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
