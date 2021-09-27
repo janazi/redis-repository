@@ -13,7 +13,7 @@ namespace Jnz.RedisRepository
         private const string KeyLockDefaultPrefix = "Lock";
         private readonly IConnectionMultiplexer _connectionMultiplexer;
         private readonly ISerializer _serializer;
-        private readonly IRedisLockManager redisLockManager;
+        private readonly IRedisLockManager _redisLockManager;
 
         private static string Token => Environment.MachineName;
         public RedisRepository(IConnectionMultiplexer connectionMultiplexer,
@@ -21,7 +21,7 @@ namespace Jnz.RedisRepository
         {
             _connectionMultiplexer = connectionMultiplexer;
             _serializer = serializer;
-            this.redisLockManager = redisLockManager;
+            _redisLockManager = redisLockManager;
         }
 
         public async Task SetAsync<T>(T obj)
@@ -93,7 +93,7 @@ namespace Jnz.RedisRepository
             var fullKey = GetFullKey<T>(key);
             var obj = await GetAsync<T>(key);
 
-            var isLocked = await redisLockManager.GetLockAsync(fullKey, db.Database, TimeSpan.FromSeconds(1));
+            var isLocked = await _redisLockManager.GetLockAsync(fullKey, db.Database, TimeSpan.FromSeconds(1));
             if (!isLocked) throw new KeyLockedException(LockedKeyError);
             return obj;
         }
@@ -144,10 +144,9 @@ namespace Jnz.RedisRepository
             return keys.Select(k => k.ToString()).ToList().AsEnumerable();
         }
 
-        private IDatabase GetDatabase<T>()
-            where T : IRedisCacheable
+        private IDatabase GetDatabase<T>() where T : IRedisCacheable
         {
-            var type = (T)Activator.CreateInstance(typeof(T), new object[] { });
+            var type = (T)Activator.CreateInstance(typeof(T));
             return _connectionMultiplexer.GetDatabase(type.GetDatabaseNumber());
         }
 
@@ -270,11 +269,16 @@ namespace Jnz.RedisRepository
             return await db.KeyExpireAsync(fullKey, expires);
         }
 
-            private static string GetFullKey<T>(string key)
-           where T : IRedisCacheable
+        private static string GetFullKey<T>(string key) where T : IRedisCacheable
         {
             var obj = (T)Activator.CreateInstance(typeof(T));
             return $"{obj.GetIndex()}:{key}";
+        }
+
+        public async Task<decimal> IncrementByDecimal(string key, decimal value, int databaseNumber)
+        {
+            var db = GetDatabase(databaseNumber);
+            return (decimal)await db.StringIncrementAsync(key, (float)value);
         }
     }
 }

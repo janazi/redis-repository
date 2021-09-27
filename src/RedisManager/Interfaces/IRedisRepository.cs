@@ -109,6 +109,14 @@ namespace Jnz.RedisRepository.Interfaces
         /// <param name="expires"></param>
         /// <returns></returns>
         Task<bool> SetExpiration(string fullKey, int databaseNumber, TimeSpan expires);
+        /// <summary>
+        /// IncrByDecimal
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="databaseNumber"></param>
+        /// <returns></returns>
+        Task<decimal> IncrementByDecimal(string key, decimal value, int databaseNumber);
 
     }
 }
