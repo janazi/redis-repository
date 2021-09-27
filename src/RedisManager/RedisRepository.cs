@@ -125,6 +125,12 @@ namespace Jnz.RedisRepository
             await db.KeyDeleteAsync(fullKey);
         }
 
+        public async Task DeleteKeyAsync(string key, int dataBaseNumber)
+        {
+            var db = GetDatabase(dataBaseNumber);
+            await db.KeyDeleteAsync(key);
+        }
+
         public async Task DeleteHashAsync<T>(string key, string hash)
             where T : IRedisCacheable
         {

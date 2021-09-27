@@ -64,6 +64,7 @@ namespace Jnz.RedisRepository.Interfaces
         Task<T> GetHashAsync<T>(string key, string hash) where T : IRedisCacheable;
 
         void DeleteKey<T>(string key) where T : IRedisCacheable;
+        Task DeleteKeyAsync(string key, int dataBaseNumber);
         void DeleteKey<T>(string key, string index) where T : IRedisCacheable;
         /// <summary>
         /// Remove completamente uma key
