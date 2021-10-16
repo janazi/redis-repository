@@ -1,8 +1,9 @@
+using System;
+using System.Linq;
+using System.Threading;
 using Jnz.RedisRepository.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using RedisManager.Tests;
-using System;
-using System.Linq;
 using Xunit;
 
 namespace Jnz.RedisRepository.Tests
@@ -11,6 +12,7 @@ namespace Jnz.RedisRepository.Tests
     public class RedisRepositoryTest : IClassFixture<Services>
     {
         private readonly ServiceProvider _serviceProvider;
+
         public RedisRepositoryTest(Services services)
         {
             _serviceProvider = services.ServiceProvider;
@@ -33,7 +35,6 @@ namespace Jnz.RedisRepository.Tests
                 .GetResult();
 
             Assert.NotNull(objCache);
-
         }
 
         [Fact]
@@ -49,10 +50,13 @@ namespace Jnz.RedisRepository.Tests
 
             redisRepository.SetAsync(obj).GetAwaiter().GetResult();
 
-            var objCache = redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(3)).GetAwaiter()
+            var objCache = redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(3))
+                .GetAwaiter()
                 .GetResult();
 
-            Assert.Throws<KeyLockedException>(() => redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(1)).GetAwaiter().GetResult());
+            Assert.Throws<KeyLockedException>(() =>
+                redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(1)).GetAwaiter()
+                    .GetResult());
         }
 
 
@@ -65,7 +69,7 @@ namespace Jnz.RedisRepository.Tests
 
             redisRepository.SetAsync(obj).GetAwaiter().GetResult();
 
-            System.Threading.Thread.Sleep(550);
+            Thread.Sleep(550);
 
             var objCache = redisRepository.GetAsync<MyObject>(obj.GetKey()).GetAwaiter()
                 .GetResult();
@@ -128,8 +132,7 @@ namespace Jnz.RedisRepository.Tests
         [Fact]
         public void Deve_Obter_Todas_Chaves_Por_Indice()
         {
-
-            System.Threading.Thread.Sleep(100); // time to expire previous tests keys
+            Thread.Sleep(100); // time to expire previous tests keys
             const string key = "TestLock";
             const string key2 = "TestLock2";
 
@@ -145,7 +148,6 @@ namespace Jnz.RedisRepository.Tests
 
             Assert.Equal(2, keys.Count());
         }
-
 
 
         [Fact]
@@ -167,9 +169,7 @@ namespace Jnz.RedisRepository.Tests
                 .GetResult();
 
 
-
             Assert.Equal(data.Hour, objCache.Data.Value.Hour);
-
         }
 
         [Fact]
@@ -185,7 +185,6 @@ namespace Jnz.RedisRepository.Tests
             var objIndice = redisRepository.Get<MyObject>(index, obj.GetKey());
 
             Assert.NotNull(objIndice);
-
         }
 
         [Fact]
@@ -202,7 +201,6 @@ namespace Jnz.RedisRepository.Tests
             var objIndice = redisRepository.GetHash<MyObject>(obj.GetKey(), hash, index);
 
             Assert.NotNull(objIndice);
-
         }
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace Jnz.RedisRepository.Interfaces
+﻿namespace Jnz.RedisRepository.Interfaces;
+
+public interface ISerializer
 {
-    public interface ISerializer
-    {
-        byte[] Serialize<T>(T obj);
-        T DeserializeAsync<T>(byte[] bytes);
-    }
+    byte[] Serialize<T>(T obj);
+    T DeserializeAsync<T>(byte[] bytes);
 }

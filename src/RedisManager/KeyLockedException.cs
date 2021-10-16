@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace Jnz.RedisRepository
+namespace Jnz.RedisRepository;
+
+public class KeyLockedException : Exception
 {
-    public class KeyLockedException : Exception
+    public KeyLockedException(string message)
+        : base(message)
     {
-        public new string Message { get; private set; }
-        public KeyLockedException(string message)
-            : base(message)
-        {
-            Message = message;
-        }
+        Message = message;
     }
+
+    public new string Message { get; }
 }

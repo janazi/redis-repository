@@ -1,32 +1,33 @@
-﻿using MessagePack;
+﻿using System;
+using Jnz.RedisRepository.Extensions;
+using Jnz.RedisRepository.Interfaces;
+using MessagePack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Jnz.RedisRepository.Extensions;
-using Jnz.RedisRepository.Interfaces;
-using System;
 
 namespace RedisManager.Tests
 {
     public class Services
     {
-        public ServiceProvider ServiceProvider { get; }
         public Services()
         {
             var serviceCollection = new ServiceCollection();
-            
+
 
             var mockConfSection = new Mock<IConfigurationSection>();
             mockConfSection.SetupGet(m => m[It.Is<string>(s => s == "RedisUri")]).Returns("127.0.0.1");
             var mockConfiguration = new Mock<IConfiguration>();
-            mockConfiguration.Setup(a => a.GetSection(It.Is<string>(s => s == "ConnectionStrings"))).Returns(mockConfSection.Object);
+            mockConfiguration.Setup(a => a.GetSection(It.Is<string>(s => s == "ConnectionStrings")))
+                .Returns(mockConfSection.Object);
 
 
             serviceCollection.AddRedisRepository(mockConfiguration.Object);
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
-
         }
+
+        public ServiceProvider ServiceProvider { get; }
     }
 
     [MessagePackObject]
@@ -39,8 +40,8 @@ namespace RedisManager.Tests
 
         [Key(1)] public string Name { get; set; }
         [Key(2)] public DateTime? Data { get; set; }
-        [IgnoreMember]
-        public TimeSpan TempoEmCache { get; set; }
+
+        [IgnoreMember] public TimeSpan TempoEmCache { get; set; }
 
         public string GetIndex()
         {

@@ -1,7 +1,7 @@
-﻿using Jnz.RedisRepository.Interfaces;
+﻿using System;
+using Jnz.RedisRepository.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using RedisManager.Tests;
-using System;
 using Xunit;
 
 namespace Jnz.RedisRepository.Tests
@@ -23,7 +23,8 @@ namespace Jnz.RedisRepository.Tests
 
             var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
 
-            var lockAcquired = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(1000)).GetAwaiter().GetResult();
+            var lockAcquired = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(1000)).GetAwaiter()
+                .GetResult();
 
             Assert.True(lockAcquired);
 
@@ -39,11 +40,13 @@ namespace Jnz.RedisRepository.Tests
 
 
             var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
-            var lockAcquired = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(50)).GetAwaiter().GetResult();
+            var lockAcquired = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(50)).GetAwaiter()
+                .GetResult();
 
             Assert.True(lockAcquired);
 
-            var anotherLockAttempt = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(10)).GetAwaiter().GetResult();
+            var anotherLockAttempt = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(10)).GetAwaiter()
+                .GetResult();
 
             Assert.False(anotherLockAttempt);
         }

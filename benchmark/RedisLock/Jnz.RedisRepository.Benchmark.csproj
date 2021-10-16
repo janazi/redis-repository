@@ -11,9 +11,9 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
-    <PackageReference Include="MessagePack" Version="2.3.75" />
+    <PackageReference Include="MessagePack" Version="2.3.85" />
     <PackageReference Include="Polly" Version="7.2.2" />
-    <PackageReference Include="StackExchange.Redis" Version="2.2.50" />
+    <PackageReference Include="StackExchange.Redis" Version="2.2.79" />
   </ItemGroup>
 
   <ItemGroup>

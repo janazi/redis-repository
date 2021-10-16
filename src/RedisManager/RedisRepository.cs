@@ -1,280 +1,280 @@
-﻿using Jnz.RedisRepository.Interfaces;
-using StackExchange.Redis;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Jnz.RedisRepository.Interfaces;
+using StackExchange.Redis;
 
-namespace Jnz.RedisRepository
+namespace Jnz.RedisRepository;
+
+public class RedisRepository : IRedisRepository
 {
-    public class RedisRepository : IRedisRepository
+    private const string LockedKeyError = "Key locked by another process";
+    private const string KeyLockDefaultPrefix = "Lock";
+    private readonly IConnectionMultiplexer _connectionMultiplexer;
+    private readonly ISerializer _serializer;
+    private readonly IRedisLockManager _redisLockManager;
+
+    public RedisRepository(IConnectionMultiplexer connectionMultiplexer,
+        ISerializer serializer, IRedisLockManager redisLockManager)
     {
-        private const string LockedKeyError = "Key locked by another process";
-        private const string KeyLockDefaultPrefix = "Lock";
-        private readonly IConnectionMultiplexer _connectionMultiplexer;
-        private readonly ISerializer _serializer;
-        private readonly IRedisLockManager redisLockManager;
+        _connectionMultiplexer = connectionMultiplexer;
+        _serializer = serializer;
+        _redisLockManager = redisLockManager;
+    }
 
-        private static string Token => Environment.MachineName;
-        public RedisRepository(IConnectionMultiplexer connectionMultiplexer,
-            ISerializer serializer, IRedisLockManager redisLockManager)
-        {
-            _connectionMultiplexer = connectionMultiplexer;
-            _serializer = serializer;
-            this.redisLockManager = redisLockManager;
-        }
+    private static string Token => Environment.MachineName;
 
-        public async Task SetAsync<T>(T obj)
-            where T : IRedisCacheable
-        {
-            var bytes = _serializer.Serialize(obj);
+    public async Task SetAsync<T>(T obj)
+        where T : IRedisCacheable
+    {
+        var bytes = _serializer.Serialize(obj);
 
-            var db = _connectionMultiplexer.GetDatabase(obj.GetDatabaseNumber());
+        var db = _connectionMultiplexer.GetDatabase(obj.GetDatabaseNumber());
 
-            await db.StringSetAsync(GetFullKey<T>(obj.GetKey()), bytes, expiry: obj.GetExpiration());
-        }
+        await db.StringSetAsync(GetFullKey<T>(obj.GetKey()), bytes, obj.GetExpiration());
+    }
 
-        public void Set<T>(T obj)
-            where T : IRedisCacheable
-        {
-            var bytes = _serializer.Serialize(obj);
+    public void Set<T>(T obj)
+        where T : IRedisCacheable
+    {
+        var bytes = _serializer.Serialize(obj);
 
-            var db = _connectionMultiplexer.GetDatabase(obj.GetDatabaseNumber());
+        var db = _connectionMultiplexer.GetDatabase(obj.GetDatabaseNumber());
 
-            db.StringSet(GetFullKey<T>(obj.GetKey()), bytes, expiry: obj.GetExpiration());
-        }
+        db.StringSet(GetFullKey<T>(obj.GetKey()), bytes, obj.GetExpiration());
+    }
 
-        public void Set<T>(T obj, string index)
-            where T : IRedisCacheable
-        {
-            var bytes = _serializer.Serialize(obj);
+    public void Set<T>(T obj, string index)
+        where T : IRedisCacheable
+    {
+        var bytes = _serializer.Serialize(obj);
 
-            var db = _connectionMultiplexer.GetDatabase(obj.GetDatabaseNumber());
+        var db = _connectionMultiplexer.GetDatabase(obj.GetDatabaseNumber());
 
-            var fullKey = $"{index}:{obj.GetKey()}";
+        var fullKey = $"{index}:{obj.GetKey()}";
 
-            db.StringSet(fullKey, bytes, expiry: obj.GetExpiration());
-        }
+        db.StringSet(fullKey, bytes, obj.GetExpiration());
+    }
 
-        public void Set<T>(T obj, string key, string index)
-            where T : IRedisCacheable
-        {
-            var bytes = _serializer.Serialize(obj);
+    public void Set<T>(T obj, string key, string index)
+        where T : IRedisCacheable
+    {
+        var bytes = _serializer.Serialize(obj);
 
-            var db = _connectionMultiplexer.GetDatabase(obj.GetDatabaseNumber());
+        var db = _connectionMultiplexer.GetDatabase(obj.GetDatabaseNumber());
 
-            var fullKey = $"{index}:{key}";
+        var fullKey = $"{index}:{key}";
 
-            db.StringSet(fullKey, bytes, expiry: obj.GetExpiration());
-        }
+        db.StringSet(fullKey, bytes, obj.GetExpiration());
+    }
 
-        public void SetHash<T>(T obj, string key, string hash)
-            where T : IRedisCacheable
-        {
-            var bytes = _serializer.Serialize(obj);
-            var db = GetDatabase<T>();
-            var fullKey = GetFullKey<T>(key);
-            db.HashSetAsync(fullKey, new HashEntry[] { new HashEntry(hash, bytes) });
-        }
+    public void SetHash<T>(T obj, string key, string hash)
+        where T : IRedisCacheable
+    {
+        var bytes = _serializer.Serialize(obj);
+        var db = GetDatabase<T>();
+        var fullKey = GetFullKey<T>(key);
+        db.HashSetAsync(fullKey, new HashEntry[] { new(hash, bytes) });
+    }
 
-        public void SetHash<T>(T obj, string key, string hash, string index)
-            where T : IRedisCacheable
-        {
-            var bytes = _serializer.Serialize(obj);
-            var db = GetDatabase<T>();
-            var fullKey = $"{index}:{key}";
-            db.HashSetAsync(fullKey, new HashEntry[] { new HashEntry(hash, bytes) });
-        }
+    public void SetHash<T>(T obj, string key, string hash, string index)
+        where T : IRedisCacheable
+    {
+        var bytes = _serializer.Serialize(obj);
+        var db = GetDatabase<T>();
+        var fullKey = $"{index}:{key}";
+        db.HashSetAsync(fullKey, new HashEntry[] { new(hash, bytes) });
+    }
 
-        public async Task<T> GetWithLockAsync<T>(string key, TimeSpan lockTime)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-            var fullKey = GetFullKey<T>(key);
-            var obj = await GetAsync<T>(key);
+    public async Task<T> GetWithLockAsync<T>(string key, TimeSpan lockTime)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
+        var fullKey = GetFullKey<T>(key);
+        var obj = await GetAsync<T>(key);
 
-            var isLocked = await redisLockManager.GetLockAsync(fullKey, db.Database, TimeSpan.FromSeconds(1));
-            if (!isLocked) throw new KeyLockedException(LockedKeyError);
-            return obj;
-        }
+        var isLocked = await _redisLockManager.GetLockAsync(fullKey, db.Database, TimeSpan.FromSeconds(1));
+        if (!isLocked) throw new KeyLockedException(LockedKeyError);
+        return obj;
+    }
 
-        public void DeleteKey<T>(string key)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-            var fullKey = GetFullKey<T>(key);
+    public void DeleteKey<T>(string key)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
+        var fullKey = GetFullKey<T>(key);
 
-            db.KeyDelete(fullKey);
-        }
+        db.KeyDelete(fullKey);
+    }
 
-        public void DeleteKey<T>(string key, string index)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-            var fullKey = $"{index}:{key}";
+    public void DeleteKey<T>(string key, string index)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
+        var fullKey = $"{index}:{key}";
 
-            db.KeyDelete(fullKey);
-        }
+        db.KeyDelete(fullKey);
+    }
 
-        public async Task DeleteKeyAsync<T>(string key)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-            var fullKey = GetFullKey<T>(key);
+    public async Task DeleteKeyAsync<T>(string key)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
+        var fullKey = GetFullKey<T>(key);
 
-            await db.KeyDeleteAsync(fullKey);
-        }
+        await db.KeyDeleteAsync(fullKey);
+    }
 
-        public async Task DeleteHashAsync<T>(string key, string hash)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-            var fullKey = GetFullKey<T>(key);
+    public async Task DeleteHashAsync<T>(string key, string hash)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
+        var fullKey = GetFullKey<T>(key);
 
-            await db.HashDeleteAsync(fullKey, hash);
-        }
+        await db.HashDeleteAsync(fullKey, hash);
+    }
 
-        public IEnumerable<string> GetAllKeysByPattern(int dataBaseNumber, string pattern, int pageSize = 100)
-        {
-            var config = _connectionMultiplexer.Configuration.Split(',')[0];
-            var server = _connectionMultiplexer.GetServer(config);
+    public IEnumerable<string> GetAllKeysByPattern(int dataBaseNumber, string pattern, int pageSize = 100)
+    {
+        var config = _connectionMultiplexer.Configuration.Split(',')[0];
+        var server = _connectionMultiplexer.GetServer(config);
 
-            var keys = server.Keys(database: dataBaseNumber, pattern: pattern, pageSize: pageSize);
+        var keys = server.Keys(dataBaseNumber, pattern, pageSize);
 
-            return keys.Select(k => k.ToString()).ToList().AsEnumerable();
-        }
+        return keys.Select(k => k.ToString()).ToList().AsEnumerable();
+    }
 
-        private IDatabase GetDatabase<T>()
-            where T : IRedisCacheable
-        {
-            var type = (T)Activator.CreateInstance(typeof(T), new object[] { });
-            return _connectionMultiplexer.GetDatabase(type.GetDatabaseNumber());
-        }
+    public async Task<T> GetAsync<T>(string key)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
 
-        private IDatabase GetDatabase(int databaseNumber)
-        {
-            return _connectionMultiplexer.GetDatabase(databaseNumber);
-        }
+        var fullKey = GetFullKey<T>(key);
+        var bytes = await db.StringGetAsync(fullKey);
 
-        public async Task<T> GetAsync<T>(string key)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
+        return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
+    }
 
-            var fullKey = GetFullKey<T>(key);
-            var bytes = await db.StringGetAsync(fullKey);
+    public async Task<T> GetAsync<T>(string index, string key)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
 
-            return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
-        }
+        var fullKey = $"{index}:{key}";
+        var bytes = await db.StringGetAsync(fullKey);
 
-        public async Task<T> GetAsync<T>(string index, string key)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
+        return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
+    }
 
-            var fullKey = $"{index}:{key}";
-            var bytes = await db.StringGetAsync(fullKey);
+    public T Get<T>(string key)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
 
-            return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
-        }
+        var fullKey = GetFullKey<T>(key);
+        var bytes = db.StringGet(fullKey);
 
-        public T Get<T>(string key)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
+        return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
+    }
 
-            var fullKey = GetFullKey<T>(key);
-            var bytes = db.StringGet(fullKey);
+    public T Get<T>(string key, string index)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
 
-            return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
-        }
+        var fullKey = $"{index}:{key}";
+        var bytes = db.StringGet(fullKey);
 
-        public T Get<T>(string key, string index)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
+        return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
+    }
 
-            var fullKey = $"{index}:{key}";
-            var bytes = db.StringGet(fullKey);
+    public T GetHash<T>(string key, string hash)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
 
-            return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
-        }
+        var fullKey = GetFullKey<T>(key);
+        var dados = db.HashGet(fullKey, hash);
 
-        public T GetHash<T>(string key, string hash)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
+        return dados.IsNull ? default : _serializer.DeserializeAsync<T>(dados);
+    }
 
-            var fullKey = GetFullKey<T>(key);
-            var dados = db.HashGet(fullKey, hash);
+    public T GetHash<T>(string key, string hash, string index)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
 
-            return dados.IsNull ? default : _serializer.DeserializeAsync<T>(dados);
-        }
+        var fullKey = $"{index}:{key}";
+        var dados = db.HashGet(fullKey, hash);
 
-        public T GetHash<T>(string key, string hash, string index)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
+        return dados.IsNull ? default : _serializer.DeserializeAsync<T>(dados);
+    }
 
-            var fullKey = $"{index}:{key}";
-            var dados = db.HashGet(fullKey, hash);
+    public async Task SetHashAsync<T>(T obj, string key, string hash)
+        where T : IRedisCacheable
+    {
+        var bytes = _serializer.Serialize(obj);
+        var db = GetDatabase<T>();
+        var fullKey = GetFullKey<T>(key);
+        await db.HashSetAsync(fullKey, new HashEntry[] { new(hash, bytes) });
+    }
 
-            return dados.IsNull ? default : _serializer.DeserializeAsync<T>(dados);
-        }
+    public async Task<T> GetHashWithLockAsync<T>(string key, string hash, TimeSpan lockTime)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
+        var keyLock = $"{KeyLockDefaultPrefix}:{key}";
 
-        public async Task SetHashAsync<T>(T obj, string key, string hash)
-            where T : IRedisCacheable
-        {
-            var bytes = _serializer.Serialize(obj);
-            var db = GetDatabase<T>();
-            var fullKey = GetFullKey<T>(key);
-            await db.HashSetAsync(fullKey, new HashEntry[] { new HashEntry(hash, bytes) });
-        }
+        var obj = await GetHashAsync<T>(key, hash);
+        var isLocked = db.LockTake(keyLock, Token, lockTime);
 
-        public async Task<T> GetHashWithLockAsync<T>(string key, string hash, TimeSpan lockTime)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-            var keyLock = $"{KeyLockDefaultPrefix}:{key}";
+        if (!isLocked) throw new KeyLockedException(LockedKeyError);
 
-            var obj = await GetHashAsync<T>(key, hash);
-            var isLocked = db.LockTake(keyLock, Token, lockTime);
+        return obj;
+    }
 
-            if (!isLocked) throw new KeyLockedException(LockedKeyError);
+    public async Task<T> GetHashAsync<T>(string key, string hash)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
 
-            return obj;
-        }
+        var fullKey = GetFullKey<T>(key);
+        var dados = await db.HashGetAsync(fullKey, hash);
 
-        public async Task<T> GetHashAsync<T>(string key, string hash)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
+        return dados.IsNull ? default : _serializer.DeserializeAsync<T>(dados);
+    }
 
-            var fullKey = GetFullKey<T>(key);
-            var dados = await db.HashGetAsync(fullKey, hash);
+    public async Task<bool> SetExpiration<T>(string key, TimeSpan expires)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
+        var fullKey = GetFullKey<T>(key);
+        return await db.KeyExpireAsync(fullKey, expires);
+    }
 
-            return dados.IsNull ? default : _serializer.DeserializeAsync<T>(dados);
-        }
+    public async Task<bool> SetExpiration(string fullKey, int databaseNumber, TimeSpan expires)
+    {
+        var db = GetDatabase(databaseNumber);
+        return await db.KeyExpireAsync(fullKey, expires);
+    }
 
-        public async Task<bool> SetExpiration<T>(string key, TimeSpan expires)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-            var fullKey = GetFullKey<T>(key);
-            return await db.KeyExpireAsync(fullKey, expires);
-        }
+    private IDatabase GetDatabase<T>()
+        where T : IRedisCacheable
+    {
+        var type = (T)Activator.CreateInstance(typeof(T), new object[] { });
+        return _connectionMultiplexer.GetDatabase(type.GetDatabaseNumber());
+    }
 
-        public async Task<bool> SetExpiration(string fullKey, int databaseNumber, TimeSpan expires)
-        {
-            var db = GetDatabase(databaseNumber);
-            return await db.KeyExpireAsync(fullKey, expires);
-        }
+    private IDatabase GetDatabase(int databaseNumber)
+    {
+        return _connectionMultiplexer.GetDatabase(databaseNumber);
+    }
 
-            private static string GetFullKey<T>(string key)
-           where T : IRedisCacheable
-        {
-            var obj = (T)Activator.CreateInstance(typeof(T));
-            return $"{obj.GetIndex()}:{key}";
-        }
+    private static string GetFullKey<T>(string key)
+        where T : IRedisCacheable
+    {
+        var obj = (T)Activator.CreateInstance(typeof(T));
+        return $"{obj.GetIndex()}:{key}";
     }
 }
