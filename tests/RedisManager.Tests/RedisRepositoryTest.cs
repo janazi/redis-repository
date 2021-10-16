@@ -12,7 +12,7 @@ namespace Jnz.RedisRepository.Tests
     public class RedisRepositoryTest : IClassFixture<Services>
     {
         private readonly ServiceProvider _serviceProvider;
-
+        private const string DecimalKey = "DecimalKey:1";
         public RedisRepositoryTest(Services services)
         {
             _serviceProvider = services.ServiceProvider;
@@ -201,6 +201,21 @@ namespace Jnz.RedisRepository.Tests
             var objIndice = redisRepository.GetHash<MyObject>(obj.GetKey(), hash, index);
 
             Assert.NotNull(objIndice);
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task ShouldCreate_FloatKeyAsync()
+        {
+            var dataBaseNumber = 0;
+            var initialValue = 10.25f;
+            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
+            var savedValue = await redisRepository.IncrementByDecimal(DecimalKey, (decimal)initialValue, dataBaseNumber);
+            Assert.Equal((decimal)initialValue, savedValue);
+            decimal valueToIncrement = 10;
+            savedValue = await redisRepository.IncrementByDecimal(DecimalKey, valueToIncrement, dataBaseNumber);
+            var newValue = (decimal)initialValue + valueToIncrement;
+            Assert.Equal(newValue, savedValue);
+            await redisRepository.DeleteKeyAsync(DecimalKey, dataBaseNumber);
         }
     }
 }
