@@ -126,17 +126,17 @@ public class RedisRepository : IRedisRepository
         await db.KeyDeleteAsync(fullKey);
     }
 
-        public async Task DeleteKeyAsync(string key, int dataBaseNumber)
-        {
-            var db = GetDatabase(dataBaseNumber);
-            await db.KeyDeleteAsync(key);
-        }
+    public async Task DeleteKeyAsync(string key, int dataBaseNumber)
+    {
+        var db = GetDatabase(dataBaseNumber);
+        await db.KeyDeleteAsync(key);
+    }
 
-        public async Task DeleteHashAsync<T>(string key, string hash)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-            var fullKey = GetFullKey<T>(key);
+    public async Task DeleteHashAsync<T>(string key, string hash)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
+        var fullKey = GetFullKey<T>(key);
 
         await db.HashDeleteAsync(fullKey, hash);
     }
@@ -151,22 +151,21 @@ public class RedisRepository : IRedisRepository
         return keys.Select(k => k.ToString()).ToList().AsEnumerable();
     }
 
-        private IDatabase GetDatabase<T>() where T : IRedisCacheable
-        {
-            var type = (T)Activator.CreateInstance(typeof(T));
-            return _connectionMultiplexer.GetDatabase(type.GetDatabaseNumber());
-        }
+    private IDatabase GetDatabase<T>() where T : IRedisCacheable
+    {
+        var type = (T)Activator.CreateInstance(typeof(T));
+        return _connectionMultiplexer.GetDatabase(type.GetDatabaseNumber());
+    }
 
-        private IDatabase GetDatabase(int databaseNumber)
-        {
-            return _connectionMultiplexer.GetDatabase(databaseNumber);
-        }
+    private IDatabase GetDatabase(int databaseNumber)
+    {
+        return _connectionMultiplexer.GetDatabase(databaseNumber);
+    }
 
-        public async Task<T> GetAsync<T>(string key)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-            var db = GetDatabase<T>();
+    public async Task<T> GetAsync<T>(string key)
+        where T : IRedisCacheable
+    {
+        var db = GetDatabase<T>();
 
         var fullKey = GetFullKey<T>(key);
         var bytes = await db.StringGetAsync(fullKey);
@@ -276,16 +275,11 @@ public class RedisRepository : IRedisRepository
         var db = GetDatabase(databaseNumber);
         return await db.KeyExpireAsync(fullKey, expires);
     }
-    private IDatabase GetDatabase<T>()
-        where T : IRedisCacheable
-    {
-        var type = (T)Activator.CreateInstance(typeof(T), new object[] { });
-        return _connectionMultiplexer.GetDatabase(type.GetDatabaseNumber());
-    }
 
-    private IDatabase GetDatabase(int databaseNumber)
+    public async Task<decimal> IncrementByDecimal(string key, decimal value, int databaseNumber)
     {
-        return _connectionMultiplexer.GetDatabase(databaseNumber);
+        var db = GetDatabase(databaseNumber);
+        return (decimal)await db.StringIncrementAsync(key, (float)value);
     }
 
     private static string GetFullKey<T>(string key)
@@ -294,4 +288,4 @@ public class RedisRepository : IRedisRepository
         var obj = (T)Activator.CreateInstance(typeof(T));
         return $"{obj.GetIndex()}:{key}";
     }
-}}
+}

@@ -69,25 +69,25 @@ public interface IRedisRepository
     /// <returns></returns>
     Task<T> GetHashAsync<T>(string key, string hash) where T : IRedisCacheable;
 
-        void DeleteKey<T>(string key) where T : IRedisCacheable;
-        Task DeleteKeyAsync(string key, int dataBaseNumber);
-        void DeleteKey<T>(string key, string index) where T : IRedisCacheable;
-        /// <summary>
-        /// Remove completamente uma key
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        Task DeleteKeyAsync<T>(string key) where T : IRedisCacheable;
-        /// <summary>
-        /// Remove uma hash de uma key
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="hash"></param>
-        /// <returns></returns>
-        Task DeleteHashAsync<T>(string key, string hash)
-            where T : IRedisCacheable;
+    void DeleteKey<T>(string key) where T : IRedisCacheable;
+    Task DeleteKeyAsync(string key, int dataBaseNumber);
+    void DeleteKey<T>(string key, string index) where T : IRedisCacheable;
+    /// <summary>
+    /// Remove completamente uma key
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    Task DeleteKeyAsync<T>(string key) where T : IRedisCacheable;
+    /// <summary>
+    /// Remove uma hash de uma key
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="key"></param>
+    /// <param name="hash"></param>
+    /// <returns></returns>
+    Task DeleteHashAsync<T>(string key, string hash)
+        where T : IRedisCacheable;
 
     /// <summary>
     ///     Obtem todas as chaves de um determinado padrão
@@ -104,26 +104,25 @@ public interface IRedisRepository
     void SetHash<T>(T obj, string key, string hash) where T : IRedisCacheable;
     void SetHash<T>(T obj, string key, string hash, string index) where T : IRedisCacheable;
 
-        T Get<T>(string key) where T : IRedisCacheable;
-        T Get<T>(string key, string index) where T : IRedisCacheable;
-        T GetHash<T>(string key, string hash) where T : IRedisCacheable;
-        T GetHash<T>(string key, string hash, string index) where T : IRedisCacheable;
-        Task<bool> SetExpiration<T>(string key, TimeSpan expires) where T : IRedisCacheable;
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="fullKey">Index + Key</param>
-        /// <param name="expires"></param>
-        /// <returns></returns>
-        Task<bool> SetExpiration(string fullKey, int databaseNumber, TimeSpan expires);
-        /// <summary>
-        /// IncrByDecimal
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="databaseNumber"></param>
-        /// <returns></returns>
-        Task<decimal> IncrementByDecimal(string key, decimal value, int databaseNumber);
+    T Get<T>(string key) where T : IRedisCacheable;
+    T Get<T>(string key, string index) where T : IRedisCacheable;
+    T GetHash<T>(string key, string hash) where T : IRedisCacheable;
+    T GetHash<T>(string key, string hash, string index) where T : IRedisCacheable;
+    Task<bool> SetExpiration<T>(string key, TimeSpan expires) where T : IRedisCacheable;
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="fullKey">Index + Key</param>
+    /// <param name="expires"></param>
+    /// <returns></returns>
+    Task<bool> SetExpiration(string fullKey, int databaseNumber, TimeSpan expires);
+    /// <summary>
+    /// IncrByDecimal
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <param name="databaseNumber"></param>
+    /// <returns></returns>
+    Task<decimal> IncrementByDecimal(string key, decimal value, int databaseNumber);
 
-    }
 }
