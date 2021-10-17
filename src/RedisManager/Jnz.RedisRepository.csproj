@@ -4,15 +4,25 @@
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>Jnz.RedisRepository</PackageId>
-    <Version>1.0.2.0</Version>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <Version>1.0.3.0</Version>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
     <Authors>Marcelo Janazi</Authors>
     <Company>Janazi</Company>
     <PackageDescription>Redis Repository</PackageDescription>
     <RepositoryUrl>https://github.com/janazi/redis-repository</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>This package intend to incapsulate the use of Redis Hash and Distributed Lock.
+</Description>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\readme.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MessagePack" Version="2.3.85" />
