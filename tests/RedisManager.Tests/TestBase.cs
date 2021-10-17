@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Jnz.RedisRepository.Extensions;
 using Jnz.RedisRepository.Interfaces;
 using MessagePack;
@@ -14,15 +15,12 @@ namespace RedisManager.Tests
         {
             var serviceCollection = new ServiceCollection();
 
-
-            var mockConfSection = new Mock<IConfigurationSection>();
-            mockConfSection.SetupGet(m => m[It.Is<string>(s => s == "RedisUri")]).Returns("127.0.0.1");
-            var mockConfiguration = new Mock<IConfiguration>();
-            mockConfiguration.Setup(a => a.GetSection(It.Is<string>(s => s == "ConnectionStrings")))
-                .Returns(mockConfSection.Object);
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
 
 
-            serviceCollection.AddRedisRepository(mockConfiguration.Object);
+            serviceCollection.AddRedisRepository(configuration);
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
         }

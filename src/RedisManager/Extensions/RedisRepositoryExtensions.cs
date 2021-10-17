@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using Jnz.RedisRepository.Interfaces;
@@ -33,14 +34,15 @@ public static class RedisRepositoryExtensions
         IConfiguration configuration, IFormatterResolver formatterResolver = null)
     {
         var redisOptions = configuration.GetSection("RedisOptions").Get<RedisOptions>();
+        
         if (redisOptions is null)
-            throw new AbandonedMutexException("RedisOptions configuration section is missing");
+            throw new ArgumentException("RedisOptions configuration section is missing");
 
         var options = new ConfigurationOptions
         {
             SyncTimeout = redisOptions.SyncTimeout,
             AsyncTimeout = redisOptions.AsyncTimeout,
-            KeepAlive = redisOptions.KeepAlive
+            KeepAlive = redisOptions.KeepAlive,
         };
         redisOptions.Hosts.ToList().ForEach(h => options.EndPoints.Add(h));
 
