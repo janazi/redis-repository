@@ -1,4 +1,7 @@
-﻿using Jnz.RedisRepository.Interfaces;
+﻿using System.Linq;
+using System.Text;
+using System.Threading;
+using Jnz.RedisRepository.Interfaces;
 using MessagePack;
 using MessagePack.Resolvers;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +16,13 @@ public static class RedisRepositoryExtensions
     ///     Adiciona a interface IRedisRepository para utilizar o Redis como banco de dados key/value
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="configuration"></param>
+    /// <param name="configuration">It will look for a section string named RedisOptions 
+    /// ex: "RedisOptions": {
+    /// "hosts": [ "localhost:6379" ],
+    /// "SyncTimeout": 500, 
+    /// "AsyncTimeout": 500,
+    /// "KeepAlive": 180
+    /// }</param>
     /// <param name="formatterResolver">
     ///     Por padrão irá assumir ContractlessStandardResolver que não
     ///     precisa de atributos nas models, por causa do MessagePack, porém perde em performance para
@@ -23,18 +32,20 @@ public static class RedisRepositoryExtensions
     public static IServiceCollection AddRedisRepository(this IServiceCollection services,
         IConfiguration configuration, IFormatterResolver formatterResolver = null)
     {
-        var uri = configuration.GetConnectionString("RedisUri");
+        var redisOptions = configuration.GetSection("RedisOptions").Get<RedisOptions>();
+        if (redisOptions is null)
+            throw new AbandonedMutexException("RedisOptions configuration section is missing");
 
         var options = new ConfigurationOptions
         {
-            EndPoints = { uri },
-            SyncTimeout = 500,
-            AsyncTimeout = 500,
-            KeepAlive = 180
+            SyncTimeout = redisOptions.SyncTimeout,
+            AsyncTimeout = redisOptions.AsyncTimeout,
+            KeepAlive = redisOptions.KeepAlive
         };
+        redisOptions.Hosts.ToList().ForEach(h => options.EndPoints.Add(h));
 
-        if (formatterResolver == null)
-            formatterResolver = ContractlessStandardResolver.Instance;
+
+        formatterResolver ??= ContractlessStandardResolver.Instance;
 
         services.AddSingleton(formatterResolver);
 
