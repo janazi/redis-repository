@@ -1,12 +1,16 @@
 # Introduction 
 This project is about a way to use Redis as a NoSQL Database, not only as cache. It make easy to create keys in the right way, with index.
+It intend to make the use of hash and distributed lock easier.
 
 # Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+There are an extesion method named AddRedisRepository that receives an IConfiguration and look for a section called RedisOptions with the following configurations:
+"RedisOptions": {
+    "hosts": [ "localhost:6379" ],
+    "SyncTimeout": 5000, 
+    "AsyncTimeout": 5000,
+    "KeepAlive": 180
+  }
+  ps: Sample values in Sync and Async Timeout.
 
 # Build and Test
 TODO: Describe and show how to build your code and run the tests. 
