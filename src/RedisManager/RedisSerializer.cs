@@ -2,30 +2,32 @@
 using MessagePack;
 using MessagePack.Resolvers;
 
-namespace Jnz.RedisRepository;
-
-public class RedisSerializer : ISerializer
+namespace Jnz.RedisRepository
 {
-    public RedisSerializer(IFormatterResolver formatterResolver)
+
+    public class RedisSerializer : ISerializer
     {
-        StaticCompositeResolver.Instance.Register(NativeDateTimeResolver.Instance, formatterResolver);
+        public RedisSerializer(IFormatterResolver formatterResolver)
+        {
+            StaticCompositeResolver.Instance.Register(NativeDateTimeResolver.Instance, formatterResolver);
 
-        var option = MessagePackSerializerOptions.Standard.WithResolver(StaticCompositeResolver.Instance);
+            var option = MessagePackSerializerOptions.Standard.WithResolver(StaticCompositeResolver.Instance);
 
-        MessagePackSerializer.DefaultOptions = option;
+            MessagePackSerializer.DefaultOptions = option;
 
-        //var options = MessagePackSerializerOptions.Standard.WithResolver(NativeDateTimeResolver.Instance);
-        //MessagePackSerializer.DefaultOptions = options;
-        //CompositeResolver.RegisterAndSetAsDefault(NativeDateTimeResolver.Instance, formatterResolver);
-    }
+            //var options = MessagePackSerializerOptions.Standard.WithResolver(NativeDateTimeResolver.Instance);
+            //MessagePackSerializer.DefaultOptions = options;
+            //CompositeResolver.RegisterAndSetAsDefault(NativeDateTimeResolver.Instance, formatterResolver);
+        }
 
-    public T DeserializeAsync<T>(byte[] bytes)
-    {
-        return MessagePackSerializer.Deserialize<T>(bytes);
-    }
+        public T DeserializeAsync<T>(byte[] bytes)
+        {
+            return MessagePackSerializer.Deserialize<T>(bytes);
+        }
 
-    public byte[] Serialize<T>(T obj)
-    {
-        return MessagePackSerializer.Serialize(obj);
+        public byte[] Serialize<T>(T obj)
+        {
+            return MessagePackSerializer.Serialize(obj);
+        }
     }
 }

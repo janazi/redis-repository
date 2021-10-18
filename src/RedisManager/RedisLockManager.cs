@@ -1,48 +1,50 @@
-﻿using System;
-using System.Threading.Tasks;
-using Jnz.RedisRepository.Interfaces;
+﻿using Jnz.RedisRepository.Interfaces;
 using StackExchange.Redis;
+using System;
+using System.Threading.Tasks;
 
-namespace Jnz.RedisRepository;
-
-public class RedisLockManager : IRedisLockManager
+namespace Jnz.RedisRepository
 {
-    private const string KeyLockDefaultPrefix = "Lock";
-    private readonly IConnectionMultiplexer _connectionMultiplexer;
 
-    public RedisLockManager(IConnectionMultiplexer connectionMultiplexer)
+    public class RedisLockManager : IRedisLockManager
     {
-        _connectionMultiplexer = connectionMultiplexer;
-    }
+        private const string KeyLockDefaultPrefix = "Lock";
+        private readonly IConnectionMultiplexer _connectionMultiplexer;
 
-    private static string Token => Environment.MachineName;
+        public RedisLockManager(IConnectionMultiplexer connectionMultiplexer)
+        {
+            _connectionMultiplexer = connectionMultiplexer;
+        }
+
+        private static string Token => Environment.MachineName;
 
 
-    /// <summary>
-    ///     Key must make explicit the reason of taking a lock ex: Person-123456
-    ///     Bad keys are just "123456" or "person"
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="databaseNumber"></param>
-    /// <param name="lockTime"></param>
-    /// <returns></returns>
-    public async Task<bool> GetLockAsync(string key, int databaseNumber, TimeSpan lockTime)
-    {
-        var keyLock = $"{KeyLockDefaultPrefix}:{key}";
+        /// <summary>
+        ///     Key must make explicit the reason of taking a lock ex: Person-123456
+        ///     Bad keys are just "123456" or "person"
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="databaseNumber"></param>
+        /// <param name="lockTime"></param>
+        /// <returns></returns>
+        public async Task<bool> GetLockAsync(string key, int databaseNumber, TimeSpan lockTime)
+        {
+            var keyLock = $"{KeyLockDefaultPrefix}:{key}";
 
-        var db = _connectionMultiplexer.GetDatabase(databaseNumber);
-        var isLockedAcquired = await db.LockTakeAsync(keyLock, Token, lockTime);
+            var db = _connectionMultiplexer.GetDatabase(databaseNumber);
+            var isLockedAcquired = await db.LockTakeAsync(keyLock, Token, lockTime);
 
-        return isLockedAcquired;
-    }
+            return isLockedAcquired;
+        }
 
-    public async Task<bool> ReleaseLockAsync(string key, int databaseNumber)
-    {
-        var db = _connectionMultiplexer.GetDatabase(databaseNumber);
-        var token = Environment.MachineName;
-        var keyLock = $"{KeyLockDefaultPrefix}:{key}";
-        var isLockRelesead = await db.LockReleaseAsync(keyLock, token);
+        public async Task<bool> ReleaseLockAsync(string key, int databaseNumber)
+        {
+            var db = _connectionMultiplexer.GetDatabase(databaseNumber);
+            var token = Environment.MachineName;
+            var keyLock = $"{KeyLockDefaultPrefix}:{key}";
+            var isLockRelesead = await db.LockReleaseAsync(keyLock, token);
 
-        return isLockRelesead;
+            return isLockRelesead;
+        }
     }
 }

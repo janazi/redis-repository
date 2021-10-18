@@ -1,11 +1,13 @@
 ﻿using System;
 
-namespace Jnz.RedisRepository.Interfaces;
-
-public interface IRedisCacheable
+namespace Jnz.RedisRepository.Interfaces
 {
-    string GetKey();
-    string GetIndex();
-    int GetDatabaseNumber();
-    TimeSpan? GetExpiration();
+
+    public interface IRedisCacheable
+    {
+        string GetKey();
+        string GetIndex();
+        int GetDatabaseNumber();
+        TimeSpan? GetExpiration();
+    }
 }

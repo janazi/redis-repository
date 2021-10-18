@@ -2,9 +2,11 @@
 {
     public class RedisOptions
     {
+
         public string[] Hosts { get; set; }
         public int SyncTimeout { get; set; }
         public int AsyncTimeout { get; set; }
         public int KeepAlive { get; set; }
+        public string Password { get; set; }
     }
 }
