@@ -8,7 +8,8 @@ There are an extesion method named AddRedisRepository that receives an IConfigur
     "hosts": [ "localhost:6379" ],
     "SyncTimeout": 5000, 
     "AsyncTimeout": 5000,
-    "KeepAlive": 180
+    "KeepAlive": 180,
+    "AbortOnConnectFail": false
   }
   ps: Sample values in Sync and Async Timeout.
 
