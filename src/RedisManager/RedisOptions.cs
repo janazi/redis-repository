@@ -8,5 +8,6 @@
         public int AsyncTimeout { get; set; }
         public int KeepAlive { get; set; }
         public string Password { get; set; }
+        public bool AbortOnConnectFail { get; set; }
     }
 }
