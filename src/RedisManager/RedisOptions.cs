@@ -9,5 +9,6 @@
         public int KeepAlive { get; set; }
         public string Password { get; set; }
         public bool AbortOnConnectFail { get; set; }
+        public bool AllowAdmin { get; set; }
     }
 }

@@ -31,6 +31,7 @@ namespace Jnz.RedisRepository.Interfaces
         /// <param name="key"></param>
         /// <returns></returns>
         Task<T> GetAsync<T>(string key) where T : IRedisCacheable;
+        Task<string> GetStringAsync(string key, int dataBaseNumber);
 
         /// <summary>
         ///     Obtem o objeto informado indice e chave ex Pessoa:1234

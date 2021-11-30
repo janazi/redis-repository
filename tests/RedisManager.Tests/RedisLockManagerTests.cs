@@ -1,7 +1,7 @@
-﻿using System;
-using Jnz.RedisRepository.Interfaces;
+﻿using Jnz.RedisRepository.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using RedisManager.Tests;
+using System;
 using Xunit;
 
 namespace Jnz.RedisRepository.Tests

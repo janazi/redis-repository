@@ -289,6 +289,12 @@ namespace Jnz.RedisRepository
             var obj = (T)Activator.CreateInstance(typeof(T));
             return $"{obj.GetIndex()}:{key}";
         }
+
+        public async Task<string> GetStringAsync(string key, int dataBaseNumber)
+        {
+            var db = _connectionMultiplexer.GetDatabase(dataBaseNumber);
+            return await db.StringGetAsync(key);
+        }
     }
 
 }

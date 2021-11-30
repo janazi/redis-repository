@@ -43,7 +43,8 @@ namespace Jnz.RedisRepository.Extensions
                 AsyncTimeout = redisOptions.AsyncTimeout,
                 KeepAlive = redisOptions.KeepAlive,
                 Password = redisOptions.Password,
-                AbortOnConnectFail = redisOptions.AbortOnConnectFail
+                AbortOnConnectFail = redisOptions.AbortOnConnectFail,
+                AllowAdmin = redisOptions.AllowAdmin
             };
             redisOptions.Hosts.ToList().ForEach(h => options.EndPoints.Add(h));
 
