@@ -40,12 +40,12 @@ namespace Jnz.RedisRepository.Tests
 
 
             var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
-            var lockAcquired = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(50)).GetAwaiter()
+            var lockAcquired = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(150)).GetAwaiter()
                 .GetResult();
 
             Assert.True(lockAcquired);
 
-            var anotherLockAttempt = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(10)).GetAwaiter()
+            var anotherLockAttempt = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(110)).GetAwaiter()
                 .GetResult();
 
             Assert.False(anotherLockAttempt);

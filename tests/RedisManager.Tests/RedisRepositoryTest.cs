@@ -24,7 +24,7 @@ namespace Jnz.RedisRepository.Tests
             var obj = new MyObject
             {
                 Name = "Test",
-                TempoEmCache = TimeSpan.FromMilliseconds(20)
+                TempoEmCache = TimeSpan.FromMilliseconds(200)
             };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
@@ -158,7 +158,7 @@ namespace Jnz.RedisRepository.Tests
             {
                 Name = "TestData",
                 Data = DateTime.Now,
-                TempoEmCache = TimeSpan.FromMilliseconds(100)
+                TempoEmCache = TimeSpan.FromMilliseconds(300)
             };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
@@ -176,7 +176,7 @@ namespace Jnz.RedisRepository.Tests
         public void Deve_Gravar_Objeto_Informando_Indice()
         {
             const string index = "NovoIndice";
-            var obj = new MyObject { Name = index, TempoEmCache = TimeSpan.FromMilliseconds(100) };
+            var obj = new MyObject { Name = index, TempoEmCache = TimeSpan.FromMilliseconds(300) };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 

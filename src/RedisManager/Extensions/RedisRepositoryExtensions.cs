@@ -44,7 +44,9 @@ namespace Jnz.RedisRepository.Extensions
                 KeepAlive = redisOptions.KeepAlive,
                 Password = redisOptions.Password,
                 AbortOnConnectFail = redisOptions.AbortOnConnectFail,
-                AllowAdmin = redisOptions.AllowAdmin
+                AllowAdmin = redisOptions.AllowAdmin,
+                ConnectRetry = redisOptions.ConnectRetry,
+                Ssl = redisOptions.Ssl
             };
             redisOptions.Hosts.ToList().ForEach(h => options.EndPoints.Add(h));
 
@@ -52,6 +54,8 @@ namespace Jnz.RedisRepository.Extensions
             formatterResolver ??= ContractlessStandardResolver.Instance;
 
             services.AddSingleton(formatterResolver);
+
+            var conn = ConnectionMultiplexer.Connect(options);
 
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(options));
             services.AddSingleton<ISerializer, RedisSerializer>();
