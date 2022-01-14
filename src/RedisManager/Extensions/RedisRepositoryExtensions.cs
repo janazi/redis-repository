@@ -55,8 +55,6 @@ namespace Jnz.RedisRepository.Extensions
 
             services.AddSingleton(formatterResolver);
 
-            var conn = ConnectionMultiplexer.Connect(options);
-
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(options));
             services.AddSingleton<ISerializer, RedisSerializer>();
             services.AddSingleton<IRedisRepository, RedisRepository>();

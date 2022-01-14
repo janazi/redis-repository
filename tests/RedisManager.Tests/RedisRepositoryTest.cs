@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Jnz.RedisRepository.Interfaces;
@@ -32,6 +33,21 @@ namespace Jnz.RedisRepository.Tests
             redisRepository.SetAsync(obj).GetAwaiter().GetResult();
 
             var objCache = redisRepository.GetAsync<MyObject>(obj.GetKey()).GetAwaiter()
+                .GetResult();
+
+            Assert.NotNull(objCache);
+        }
+
+        [Fact]
+        public void Should_SaveACollection_ToCache()
+        {
+            var obj = new List<string>();
+
+            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
+
+            redisRepository.SetAsync(obj, "Collection", "Redis", 0).GetAwaiter().GetResult();
+
+            var objCache = redisRepository.GetAsync<List<string>>("Redis", "Collection", 0).GetAwaiter()
                 .GetResult();
 
             Assert.NotNull(objCache);
@@ -132,7 +148,7 @@ namespace Jnz.RedisRepository.Tests
         [Fact]
         public void Deve_Obter_Todas_Chaves_Por_Indice()
         {
-            Thread.Sleep(100); // time to expire previous tests keys
+            Thread.Sleep(300); // time to expire previous tests keys
             const string key = "TestLock";
             const string key2 = "TestLock2";
 

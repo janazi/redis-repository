@@ -14,6 +14,15 @@ namespace Jnz.RedisRepository.Interfaces
         /// <param name="obj"></param>
         /// <returns></returns>
         Task SetAsync<T>(T obj) where T : IRedisCacheable;
+        /// <summary>
+        /// Set any kind of object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="key"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        Task SetAsync<T>(T obj, string key, string index, int databaseNumber = 0, TimeSpan? expiration = null) where T : class;
 
         /// <summary>
         ///     Obtêm um objeto do Redis com Lock para uso exclusivo
@@ -31,6 +40,8 @@ namespace Jnz.RedisRepository.Interfaces
         /// <param name="key"></param>
         /// <returns></returns>
         Task<T> GetAsync<T>(string key) where T : IRedisCacheable;
+        Task<T> GetAsync<T>(string index, string key, int databaseNumber)
+           where T : class;
         Task<string> GetStringAsync(string key, int dataBaseNumber);
 
         /// <summary>

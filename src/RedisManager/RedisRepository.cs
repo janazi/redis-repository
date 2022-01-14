@@ -36,6 +36,18 @@ namespace Jnz.RedisRepository
             await db.StringSetAsync(GetFullKey<T>(obj.GetKey()), bytes, obj.GetExpiration());
         }
 
+        public async Task SetAsync<T>(T obj, string key, string index, int databaseNumber = 0, TimeSpan? expiration = null)
+            where T : class
+        {
+            var bytes = _serializer.Serialize(obj);
+
+            var db = _connectionMultiplexer.GetDatabase(databaseNumber);
+
+            var fullKey = $"{index}:{key}";
+
+            await db.StringSetAsync(fullKey, bytes, expiration);
+        }
+
         public void Set<T>(T obj)
             where T : IRedisCacheable
         {
@@ -178,6 +190,17 @@ namespace Jnz.RedisRepository
             where T : IRedisCacheable
         {
             var db = GetDatabase<T>();
+
+            var fullKey = $"{index}:{key}";
+            var bytes = await db.StringGetAsync(fullKey);
+
+            return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
+        }
+
+        public async Task<T> GetAsync<T>(string index, string key, int databaseNumber)
+           where T : class
+        {
+            var db = GetDatabase(databaseNumber);
 
             var fullKey = $"{index}:{key}";
             var bytes = await db.StringGetAsync(fullKey);
