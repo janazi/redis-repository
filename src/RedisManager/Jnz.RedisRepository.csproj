@@ -4,8 +4,8 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>Jnz.RedisRepository</PackageId>
-    <Version>1.0.10.0</Version>
-    <AssemblyVersion>1.0.10.0</AssemblyVersion>
+    <Version>1.0.11.0</Version>
+    <AssemblyVersion>1.0.11.0</AssemblyVersion>
     <Authors>Marcelo Janazi</Authors>
     <Company>Janazi</Company>
     <PackageDescription>Redis Repository</PackageDescription>

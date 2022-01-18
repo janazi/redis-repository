@@ -198,11 +198,18 @@ namespace Jnz.RedisRepository
         }
 
         public async Task<T> GetAsync<T>(string index, string key, int databaseNumber)
-           where T : class
         {
             var db = GetDatabase(databaseNumber);
 
             var fullKey = $"{index}:{key}";
+            var bytes = await db.StringGetAsync(fullKey);
+
+            return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
+        }
+
+        public async Task<T> GetAsync<T>(string fullKey, int databaseNumber)
+        {
+            var db = GetDatabase(databaseNumber);
             var bytes = await db.StringGetAsync(fullKey);
 
             return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);

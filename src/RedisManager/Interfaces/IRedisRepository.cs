@@ -40,8 +40,9 @@ namespace Jnz.RedisRepository.Interfaces
         /// <param name="key"></param>
         /// <returns></returns>
         Task<T> GetAsync<T>(string key) where T : IRedisCacheable;
-        Task<T> GetAsync<T>(string index, string key, int databaseNumber)
-           where T : class;
+        Task<T> GetAsync<T>(string index, string key, int databaseNumber);
+
+        Task<T> GetAsync<T>(string fullKey, int databaseNumber);
         Task<string> GetStringAsync(string key, int dataBaseNumber);
 
         /// <summary>

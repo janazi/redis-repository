@@ -8,10 +8,10 @@ namespace Jnz.RedisRepository.Benchmark
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             //var summary = BenchmarkRunner.Run<MessagePackContractlessStandarResolverBenchmark>();
-            TestRedisAsync().GetAwaiter().GetResult();
+            await TestRedisAsync();
         }
 
         public static async Task TestRedisAsync()
