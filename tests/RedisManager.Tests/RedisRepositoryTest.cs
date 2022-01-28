@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Jnz.RedisRepository.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using RedisManager.Tests;
@@ -14,6 +15,8 @@ namespace Jnz.RedisRepository.Tests
     {
         private readonly ServiceProvider _serviceProvider;
         private const string DecimalKey = "DecimalKey:1";
+        private const string KeyForSet = "SET:123";
+
         public RedisRepositoryTest(Services services)
         {
             _serviceProvider = services.ServiceProvider;
@@ -220,7 +223,7 @@ namespace Jnz.RedisRepository.Tests
         }
 
         [Fact]
-        public async System.Threading.Tasks.Task ShouldCreate_FloatKeyAsync()
+        public async Task ShouldCreate_FloatKeyAsync()
         {
             var dataBaseNumber = 0;
             var initialValue = 10.25f;
@@ -233,5 +236,72 @@ namespace Jnz.RedisRepository.Tests
             Assert.Equal(newValue, savedValue);
             await redisRepository.DeleteKeyAsync(DecimalKey, dataBaseNumber);
         }
+
+        [Fact]
+        public async Task ShouldCreateSet_WithMembers()
+        {
+            var memberValue = "Value";
+            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
+            await redisRepository.SetAddAsync(0, KeyForSet, memberValue);
+            var data = await redisRepository.GetSetMembersAsync(0, KeyForSet);
+            await redisRepository.RemoveEntireSetAsync(0, KeyForSet);
+            Assert.Equal(memberValue, data[0].ToString());
+        }
+
+        [Fact]
+        public async Task ShouldCreateSet_WithMembersUsingGenerics()
+        {
+            var memberValue = new MyObject() { Name = "teste" };
+
+            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
+            await redisRepository.SetAddAsync<MyObject>(0, KeyForSet, memberValue);
+            var data = await redisRepository.GetSetMembersAsync<MyObject>(0, KeyForSet);
+            await redisRepository.RemoveEntireSetAsync(0, KeyForSet);
+            Assert.Equal(memberValue.Name, data[0].Name);
+        }
+
+        [Fact]
+        public async Task ShouldRemove_Member()
+        {
+            var memberValue = "Value";
+            var member2Value = "Value2";
+            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
+            await redisRepository.SetAddAsync(0, KeyForSet, memberValue);
+            await redisRepository.SetAddAsync(0, KeyForSet, member2Value);
+
+
+            var objects = await redisRepository.GetSetMembersAsync(0, KeyForSet);
+            Assert.Equal(2, objects.Count);
+
+            await redisRepository.RemoveMemberSetAsync(0, KeyForSet, memberValue);
+            objects = await redisRepository.GetSetMembersAsync(0, KeyForSet);
+            await redisRepository.RemoveEntireSetAsync(0, KeyForSet);
+            Assert.Single(objects);
+            Assert.Contains(member2Value, objects);
+            
+        }
+
+        [Fact]
+        public async Task ShouldRemove_MemberUsingGenerics()
+        {
+            var memberValue = new MyObject() { Name = "teste" };
+            var member2Value = new MyObject() { Name = "teste2" };
+
+            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
+            await redisRepository.SetAddAsync<MyObject>(0, KeyForSet, memberValue);
+            await redisRepository.SetAddAsync<MyObject>(0, KeyForSet, member2Value);
+
+
+            var objects = await redisRepository.GetSetMembersAsync<MyObject>(0, KeyForSet);
+            Assert.Equal(2, objects.Count);
+
+            await redisRepository.RemoveMemberSetAsync(0, KeyForSet, memberValue);
+            objects = await redisRepository.GetSetMembersAsync<MyObject>(0, KeyForSet);
+            await redisRepository.RemoveEntireSetAsync(0, KeyForSet);
+            Assert.Single(objects);
+            Assert.Contains(member2Value, objects);
+
+        }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StackExchange.Redis;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -138,6 +139,22 @@ namespace Jnz.RedisRepository.Interfaces
         /// <param name="databaseNumber"></param>
         /// <returns></returns>
         Task<decimal> IncrementByDecimal(string key, decimal value, int databaseNumber);
+
+        /// <summary>
+        /// Create or add value on a existing set
+        /// </summary>
+        /// <param name="dataBaseNumber"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+
+        Task<bool> SetAddAsync<T>(int dataBaseNumber, string key, T obj);
+        Task<bool> SetAddAsync(int dataBaseNumber, string key, string obj);
+        Task<List<T>> GetSetMembersAsync<T>(int dataBaseNumber, string key);
+        Task<List<string>> GetSetMembersAsync(int dataBaseNumber, string key);
+        Task<bool> RemoveMemberSetAsync<T>(int databaseNumber, string key, T member) where T : IEquatable<T> ;
+        Task<bool> RemoveMemberSetAsync(int databaseNumber, string key, string value);
+        Task<bool> RemoveEntireSetAsync(int databaseNumber, string key);
 
     }
 

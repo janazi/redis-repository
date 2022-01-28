@@ -325,6 +325,74 @@ namespace Jnz.RedisRepository
             var db = _connectionMultiplexer.GetDatabase(dataBaseNumber);
             return await db.StringGetAsync(key);
         }
+
+        public async Task<bool> SetAddAsync<T>(int dataBaseNumber, string key, T obj)
+        {
+            var bytes = _serializer.Serialize(obj);
+            var db = _connectionMultiplexer.GetDatabase(dataBaseNumber);
+            return await db.SetAddAsync(key, bytes);
+        }
+
+        public async Task<bool> SetAddAsync(int dataBaseNumber, string key, string obj)
+        {
+            var db = _connectionMultiplexer.GetDatabase(dataBaseNumber);
+            return await db.SetAddAsync(key, obj);
+        }
+
+        public async Task<List<T>> GetSetMembersAsync<T>(int dataBaseNumber, string key) 
+        {
+            var db = _connectionMultiplexer.GetDatabase(dataBaseNumber);
+
+            var objects = await db.SetMembersAsync(key);
+            var list = new List<T>();
+            for (int i = 0; i < objects.Length; i++)
+            {
+                var member = _serializer.DeserializeAsync<T>(objects[i]);
+                list.Add(member);
+            }
+            return list;
+        }
+
+        public async Task<List<string>> GetSetMembersAsync(int dataBaseNumber, string key)
+        {
+            var db = _connectionMultiplexer.GetDatabase(dataBaseNumber);
+
+            var objects = await db.SetMembersAsync(key);
+            var list = new List<string>();
+            for (int i = 0; i < objects.Length; i++)
+            {
+                list.Add(objects[i]);
+            }
+            return list;
+        }
+
+        public async Task<bool> RemoveMemberSetAsync<T>(int databaseNumber, string key, T member) 
+            where T : IEquatable<T>
+        {
+            var members = await GetSetMembersAsync<T>(0, key);
+            
+            members.Remove(member);
+
+            await RemoveEntireSetAsync(databaseNumber, key);
+
+            for (int i = 0; i < members.Count(); i++)
+            {
+                await SetAddAsync(databaseNumber, key, members[i]);
+            }
+
+            return true;
+        }
+
+        public async Task<bool> RemoveMemberSetAsync(int databaseNumber, string key, string value)
+        {
+            var db = _connectionMultiplexer.GetDatabase(databaseNumber);
+            return await db.SetRemoveAsync(key, value);        }
+
+        public async Task<bool> RemoveEntireSetAsync(int databaseNumber, string key)
+        {
+            var db = _connectionMultiplexer.GetDatabase(databaseNumber);
+            return await db.KeyDeleteAsync(key);
+        }
     }
 
 }

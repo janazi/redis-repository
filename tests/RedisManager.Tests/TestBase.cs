@@ -29,7 +29,7 @@ namespace RedisManager.Tests
     }
 
     [MessagePackObject]
-    public class MyObject : IRedisCacheable
+    public class MyObject : IRedisCacheable, IEquatable<MyObject>
     {
         public MyObject()
         {
@@ -59,6 +59,11 @@ namespace RedisManager.Tests
         public string GetKey()
         {
             return Name;
+        }
+
+        public bool Equals(MyObject other)
+        {
+            return this.Name == other.Name;
         }
     }
 }
