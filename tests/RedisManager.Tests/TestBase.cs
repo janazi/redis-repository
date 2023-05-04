@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Jnz.RedisRepository.Extensions;
+﻿using Jnz.RedisRepository.Extensions;
 using Jnz.RedisRepository.Interfaces;
 using MessagePack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
+using System;
 
 namespace RedisManager.Tests
 {
@@ -65,5 +63,11 @@ namespace RedisManager.Tests
         {
             return this.Name == other.Name;
         }
+    }
+
+    public class MyObjectWithoutInterface
+    {
+        public string Title { get; set; }
+        public DateTime CreatedOn { get; set; }
     }
 }

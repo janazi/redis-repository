@@ -29,9 +29,9 @@ namespace Jnz.RedisRepository.Tests
 
             Assert.True(lockAcquired);
 
-            var islockReleased = redisLockManager.ReleaseLockAsync(key, 0).GetAwaiter().GetResult();
+            var isLockReleased = redisLockManager.ReleaseLockAsync(key, 0).GetAwaiter().GetResult();
 
-            Assert.True(islockReleased);
+            Assert.True(isLockReleased);
         }
 
         [Fact]

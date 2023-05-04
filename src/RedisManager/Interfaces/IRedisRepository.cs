@@ -1,5 +1,4 @@
-﻿using StackExchange.Redis;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -33,6 +32,8 @@ namespace Jnz.RedisRepository.Interfaces
         /// <param name="lockTime"></param>
         /// <returns></returns>
         Task<T> GetWithLockAsync<T>(string key, TimeSpan lockTime) where T : IRedisCacheable;
+
+        Task<T> GetWithLockAsync<T>(string indexKey, TimeSpan lockTime, int dbNumber) where T : class;
 
         /// <summary>
         ///     Obtêm um objeto do Redis
@@ -152,7 +153,7 @@ namespace Jnz.RedisRepository.Interfaces
         Task<bool> SetAddAsync(int dataBaseNumber, string key, string obj);
         Task<List<T>> GetSetMembersAsync<T>(int dataBaseNumber, string key);
         Task<List<string>> GetSetMembersAsync(int dataBaseNumber, string key);
-        Task<bool> RemoveMemberSetAsync<T>(int databaseNumber, string key, T member) where T : IEquatable<T> ;
+        Task<bool> RemoveMemberSetAsync<T>(int databaseNumber, string key, T member) where T : IEquatable<T>;
         Task<bool> RemoveMemberSetAsync(int databaseNumber, string key, string value);
         Task<bool> RemoveEntireSetAsync(int databaseNumber, string key);
 

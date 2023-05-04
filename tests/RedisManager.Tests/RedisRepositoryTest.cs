@@ -1,11 +1,11 @@
+using Jnz.RedisRepository.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using RedisManager.Tests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Jnz.RedisRepository.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
-using RedisManager.Tests;
 using Xunit;
 
 namespace Jnz.RedisRepository.Tests
@@ -278,7 +278,7 @@ namespace Jnz.RedisRepository.Tests
             await redisRepository.RemoveEntireSetAsync(0, KeyForSet);
             Assert.Single(objects);
             Assert.Contains(member2Value, objects);
-            
+
         }
 
         [Fact]
@@ -301,6 +301,33 @@ namespace Jnz.RedisRepository.Tests
             Assert.Single(objects);
             Assert.Contains(member2Value, objects);
 
+        }
+
+        [Fact]
+        public async Task ShouldGet_WithLock()
+        {
+            const string indexName = "MyObj";
+            const string objKey = "1";
+            const string indexWithKey = $"{indexName}:{objKey}";
+            var createdDate = DateTime.Now;
+            var obj = new MyObjectWithoutInterface
+            {
+                Title = "TestLock",
+                CreatedOn = createdDate
+            };
+
+            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
+
+            redisRepository.SetAsync(obj, objKey, indexName).GetAwaiter().GetResult();
+
+            var objCache = redisRepository.GetWithLockAsync<MyObjectWithoutInterface>(indexWithKey, TimeSpan.FromSeconds(10), 0)
+                .GetAwaiter()
+                .GetResult();
+
+            Assert.NotNull(objCache);
+            Assert.Throws<KeyLockedException>(() =>
+                redisRepository.GetWithLockAsync<MyObjectWithoutInterface>(indexWithKey, TimeSpan.FromSeconds(1), 0).GetAwaiter()
+                    .GetResult());
         }
 
     }

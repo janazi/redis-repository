@@ -107,7 +107,18 @@ namespace Jnz.RedisRepository
             var fullKey = GetFullKey<T>(key);
             var obj = await GetAsync<T>(key);
 
-            var isLocked = await _redisLockManager.GetLockAsync(fullKey, db.Database, TimeSpan.FromSeconds(1));
+            var isLocked = await _redisLockManager.GetLockAsync(fullKey, db.Database, lockTime);
+            if (!isLocked) throw new KeyLockedException(LockedKeyError);
+            return obj;
+        }
+
+        public async Task<T> GetWithLockAsync<T>(string indexKey, TimeSpan lockTime, int dbNumber)
+            where T : class
+        {
+            var db = GetDatabase(dbNumber);
+            var obj = await GetAsync<T>(indexKey, dbNumber);
+
+            var isLocked = await _redisLockManager.GetLockAsync(indexKey, db.Database, lockTime);
             if (!isLocked) throw new KeyLockedException(LockedKeyError);
             return obj;
         }
@@ -339,7 +350,7 @@ namespace Jnz.RedisRepository
             return await db.SetAddAsync(key, obj);
         }
 
-        public async Task<List<T>> GetSetMembersAsync<T>(int dataBaseNumber, string key) 
+        public async Task<List<T>> GetSetMembersAsync<T>(int dataBaseNumber, string key)
         {
             var db = _connectionMultiplexer.GetDatabase(dataBaseNumber);
 
@@ -366,11 +377,11 @@ namespace Jnz.RedisRepository
             return list;
         }
 
-        public async Task<bool> RemoveMemberSetAsync<T>(int databaseNumber, string key, T member) 
+        public async Task<bool> RemoveMemberSetAsync<T>(int databaseNumber, string key, T member)
             where T : IEquatable<T>
         {
             var members = await GetSetMembersAsync<T>(0, key);
-            
+
             members.Remove(member);
 
             await RemoveEntireSetAsync(databaseNumber, key);
@@ -386,7 +397,8 @@ namespace Jnz.RedisRepository
         public async Task<bool> RemoveMemberSetAsync(int databaseNumber, string key, string value)
         {
             var db = _connectionMultiplexer.GetDatabase(databaseNumber);
-            return await db.SetRemoveAsync(key, value);        }
+            return await db.SetRemoveAsync(key, value);
+        }
 
         public async Task<bool> RemoveEntireSetAsync(int databaseNumber, string key)
         {
