@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Jnz.RedisRepository.Tests
 {
+
     public class RedisLockManagerTests : IClassFixture<Services>
     {
         private readonly ServiceProvider _serviceProvider;
