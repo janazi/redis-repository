@@ -40,7 +40,7 @@ namespace Jnz.RedisRepository.Benchmark
 
                 var bin = redisSerializer.Serialize(p);
 
-                var pessoa = redisSerializer.DeserializeAsync<Pessoa>(bin);
+                var pessoa = redisSerializer.Deserialize<Pessoa>(bin);
 
 
                 await redisRepository.SetAsync(p);

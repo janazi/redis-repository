@@ -20,7 +20,7 @@ namespace Jnz.RedisRepository
             //CompositeResolver.RegisterAndSetAsDefault(NativeDateTimeResolver.Instance, formatterResolver);
         }
 
-        public T DeserializeAsync<T>(byte[] bytes)
+        public T Deserialize<T>(byte[] bytes)
         {
             return MessagePackSerializer.Deserialize<T>(bytes);
         }

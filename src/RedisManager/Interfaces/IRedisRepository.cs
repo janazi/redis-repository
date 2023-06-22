@@ -85,6 +85,8 @@ namespace Jnz.RedisRepository.Interfaces
         /// <returns></returns>
         Task<T> GetHashAsync<T>(string key, string hash) where T : IRedisCacheable;
 
+        Task<T> GetHashAsync<T>(string key, string hash, string index, int databaseNumber);
+
         void DeleteKey<T>(string key) where T : IRedisCacheable;
         Task DeleteKeyAsync(string key, int dataBaseNumber);
         void DeleteKey<T>(string key, string index) where T : IRedisCacheable;
@@ -104,6 +106,7 @@ namespace Jnz.RedisRepository.Interfaces
         /// <returns></returns>
         Task DeleteHashAsync<T>(string key, string hash)
             where T : IRedisCacheable;
+        Task DeleteHashAsync(string key, string hash, string index, int databaseNumber);
 
         /// <summary>
         ///     Obtem todas as chaves de um determinado padrão
@@ -119,6 +122,9 @@ namespace Jnz.RedisRepository.Interfaces
         void Set<T>(T obj, string key, string index) where T : IRedisCacheable;
         void SetHash<T>(T obj, string key, string hash) where T : IRedisCacheable;
         void SetHash<T>(T obj, string key, string hash, string index) where T : IRedisCacheable;
+
+        Task SetHashAsync<T>(T obj, string key, string hash, string index, int databaseNumber)
+            where T : class;
 
         T Get<T>(string key) where T : IRedisCacheable;
         T Get<T>(string key, string index) where T : IRedisCacheable;

@@ -164,6 +164,13 @@ namespace Jnz.RedisRepository
 
             await db.HashDeleteAsync(fullKey, hash);
         }
+        public async Task DeleteHashAsync(string key, string hash, string index, int databaseNumber)
+        {
+            var db = GetDatabase(databaseNumber);
+            var fullKey = $"{index}:{key}";
+
+            await db.HashDeleteAsync(fullKey, hash);
+        }
 
         public IEnumerable<string> GetAllKeysByPattern(int dataBaseNumber, string pattern, int pageSize = 100)
         {
@@ -194,7 +201,7 @@ namespace Jnz.RedisRepository
             var fullKey = GetFullKey<T>(key);
             var bytes = await db.StringGetAsync(fullKey);
 
-            return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
+            return bytes.IsNullOrEmpty ? default : _serializer.Deserialize<T>(bytes);
         }
 
         public async Task<T> GetAsync<T>(string index, string key)
@@ -205,7 +212,7 @@ namespace Jnz.RedisRepository
             var fullKey = $"{index}:{key}";
             var bytes = await db.StringGetAsync(fullKey);
 
-            return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
+            return bytes.IsNullOrEmpty ? default : _serializer.Deserialize<T>(bytes);
         }
 
         public async Task<T> GetAsync<T>(string index, string key, int databaseNumber)
@@ -215,7 +222,7 @@ namespace Jnz.RedisRepository
             var fullKey = $"{index}:{key}";
             var bytes = await db.StringGetAsync(fullKey);
 
-            return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
+            return bytes.IsNullOrEmpty ? default : _serializer.Deserialize<T>(bytes);
         }
 
         public async Task<T> GetAsync<T>(string fullKey, int databaseNumber)
@@ -223,7 +230,7 @@ namespace Jnz.RedisRepository
             var db = GetDatabase(databaseNumber);
             var bytes = await db.StringGetAsync(fullKey);
 
-            return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
+            return bytes.IsNullOrEmpty ? default : _serializer.Deserialize<T>(bytes);
         }
 
         public T Get<T>(string key)
@@ -234,7 +241,7 @@ namespace Jnz.RedisRepository
             var fullKey = GetFullKey<T>(key);
             var bytes = db.StringGet(fullKey);
 
-            return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
+            return bytes.IsNullOrEmpty ? default : _serializer.Deserialize<T>(bytes);
         }
 
         public T Get<T>(string key, string index)
@@ -245,7 +252,7 @@ namespace Jnz.RedisRepository
             var fullKey = $"{index}:{key}";
             var bytes = db.StringGet(fullKey);
 
-            return bytes.IsNullOrEmpty ? default : _serializer.DeserializeAsync<T>(bytes);
+            return bytes.IsNullOrEmpty ? default : _serializer.Deserialize<T>(bytes);
         }
 
         public T GetHash<T>(string key, string hash)
@@ -256,7 +263,7 @@ namespace Jnz.RedisRepository
             var fullKey = GetFullKey<T>(key);
             var dados = db.HashGet(fullKey, hash);
 
-            return dados.IsNull ? default : _serializer.DeserializeAsync<T>(dados);
+            return dados.IsNull ? default : _serializer.Deserialize<T>(dados);
         }
 
         public T GetHash<T>(string key, string hash, string index)
@@ -267,7 +274,17 @@ namespace Jnz.RedisRepository
             var fullKey = $"{index}:{key}";
             var dados = db.HashGet(fullKey, hash);
 
-            return dados.IsNull ? default : _serializer.DeserializeAsync<T>(dados);
+            return dados.IsNull ? default : _serializer.Deserialize<T>(dados);
+        }
+
+        public async Task<T> GetHashAsync<T>(string key, string hash, string index, int databaseNumber)
+        {
+            var db = GetDatabase(databaseNumber);
+
+            var fullKey = $"{index}:{key}";
+            var data = await db.HashGetAsync(fullKey, hash);
+
+            return data.IsNull ? default : _serializer.Deserialize<T>(data);
         }
 
         public async Task SetHashAsync<T>(T obj, string key, string hash)
@@ -276,6 +293,15 @@ namespace Jnz.RedisRepository
             var bytes = _serializer.Serialize(obj);
             var db = GetDatabase<T>();
             var fullKey = GetFullKey<T>(key);
+            await db.HashSetAsync(fullKey, new HashEntry[] { new(hash, bytes) });
+        }
+
+        public async Task SetHashAsync<T>(T obj, string key, string hash, string index, int databaseNumber)
+            where T : class
+        {
+            var bytes = _serializer.Serialize(obj);
+            var db = GetDatabase(databaseNumber);
+            var fullKey = $"{index}:{key}";
             await db.HashSetAsync(fullKey, new HashEntry[] { new(hash, bytes) });
         }
 
@@ -301,7 +327,7 @@ namespace Jnz.RedisRepository
             var fullKey = GetFullKey<T>(key);
             var dados = await db.HashGetAsync(fullKey, hash);
 
-            return dados.IsNull ? default : _serializer.DeserializeAsync<T>(dados);
+            return dados.IsNull ? default : _serializer.Deserialize<T>(dados);
         }
 
         public async Task<bool> SetExpiration<T>(string key, TimeSpan expires)
@@ -358,7 +384,7 @@ namespace Jnz.RedisRepository
             var list = new List<T>();
             for (int i = 0; i < objects.Length; i++)
             {
-                var member = _serializer.DeserializeAsync<T>(objects[i]);
+                var member = _serializer.Deserialize<T>(objects[i]);
                 list.Add(member);
             }
             return list;

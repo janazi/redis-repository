@@ -223,6 +223,30 @@ namespace Jnz.RedisRepository.Tests
         }
 
         [Fact]
+        public async Task WhenCallingUsingClass_ShouldCreateHashUsingParameters()
+        {
+            const string index = "MyObject";
+            const string hash = "UniqueIdInsideHash";
+            const string key = "MyObjectUniqueKey";
+            const int databaseNumber = 0;
+            var obj = new MyObjectWithoutInterface { Title = "Hash", CreatedOn = DateTime.Now.ToUniversalTime() };
+
+            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
+
+            await redisRepository.SetHashAsync(obj, key, hash, index, databaseNumber);
+
+            var objSaved = await redisRepository.GetHashAsync<MyObjectWithoutInterface>(key, hash, index, 0);
+
+            Assert.NotNull(objSaved);
+
+            await redisRepository.DeleteHashAsync(key, hash, index, databaseNumber);
+
+            var objDeleted = await redisRepository.GetHashAsync<MyObjectWithoutInterface>(key, hash, index, 0);
+
+            Assert.Null(objDeleted);
+        }
+
+        [Fact]
         public async Task ShouldCreate_FloatKeyAsync()
         {
             var dataBaseNumber = 0;

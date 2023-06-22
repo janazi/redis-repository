@@ -4,6 +4,6 @@
     public interface ISerializer
     {
         byte[] Serialize<T>(T obj);
-        T DeserializeAsync<T>(byte[] bytes);
+        T Deserialize<T>(byte[] bytes);
     }
 }
