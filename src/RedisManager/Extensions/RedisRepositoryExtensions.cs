@@ -37,6 +37,12 @@ namespace Jnz.RedisRepository.Extensions
             if (redisOptions is null)
                 throw new ArgumentException("RedisOptions configuration section is missing");
 
+            return AddRedisRepository(services, configuration, redisOptions, formatterResolver);
+        }
+
+        public static IServiceCollection AddRedisRepository(this IServiceCollection services,
+            IConfiguration configuration, RedisOptions redisOptions, IFormatterResolver formatterResolver = null)
+        {
             var options = new ConfigurationOptions
             {
                 SyncTimeout = redisOptions.SyncTimeout,

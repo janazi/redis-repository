@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>Jnz.RedisRepository</PackageId>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <AssemblyVersion>1.1.1</AssemblyVersion>
     <Authors>Marcelo Janazi</Authors>
     <Company>Jnz Services</Company>

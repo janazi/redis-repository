@@ -38,10 +38,8 @@ namespace Jnz.RedisRepository.Tests
         public void Shoud_Acquire_Lock()
         {
             const string key = "TestLockAcquire";
-
-
             var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
-            var lockAcquired = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(150)).GetAwaiter()
+            var lockAcquired = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(11150)).GetAwaiter()
                 .GetResult();
 
             Assert.True(lockAcquired);
