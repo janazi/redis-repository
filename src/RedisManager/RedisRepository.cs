@@ -287,6 +287,18 @@ namespace Jnz.RedisRepository
             return data.IsNull ? default : _serializer.Deserialize<T>(data);
         }
 
+        public async Task<IEnumerable<T>> GetAllHashAsync<T>(string key, string index, int databaseNumber)
+        {
+            var db = GetDatabase(databaseNumber);
+
+            var fullKey = $"{index}:{key}";
+
+            var hashEntries = await db.HashGetAllAsync(fullKey);
+
+            return hashEntries.Length == 0 ? default(IEnumerable<T>) :
+                hashEntries.Select(hashEntry => _serializer.Deserialize<T>(hashEntry.Value)).ToList();
+        }
+
         public async Task SetHashAsync<T>(T obj, string key, string hash)
             where T : IRedisCacheable
         {

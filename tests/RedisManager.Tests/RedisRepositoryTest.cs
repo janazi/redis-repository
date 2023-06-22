@@ -247,6 +247,34 @@ namespace Jnz.RedisRepository.Tests
         }
 
         [Fact]
+        public async Task ShouldReturnAllHashEntities()
+        {
+            const string index = "MyObject";
+            const string hash = "UniqueIdInsideHash";
+            const string hash2 = "UniqueIdInsideHash2";
+            const string key = "MyHashUniqueKey";
+            const int databaseNumber = 0;
+
+            var obj = new MyObjectWithoutInterface { Title = "HashObject", CreatedOn = DateTime.Now.ToUniversalTime() };
+            var obj2 = new MyObjectWithoutInterface { Title = "HashObject2", CreatedOn = DateTime.Now.ToUniversalTime() };
+
+            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
+
+            await redisRepository.SetHashAsync(obj, key, hash, index, databaseNumber);
+            await redisRepository.SetHashAsync(obj2, key, hash2, index, databaseNumber);
+
+            var myObjects = await redisRepository
+                .GetAllHashAsync<MyObjectWithoutInterface>(key, index, databaseNumber);
+
+            Assert.NotNull(myObjects);
+            Assert.Equal(2, myObjects.Count());
+
+            await redisRepository.DeleteHashAsync(key, hash, index, databaseNumber);
+            await redisRepository.DeleteHashAsync(key, hash2, index, databaseNumber);
+
+        }
+
+        [Fact]
         public async Task ShouldCreate_FloatKeyAsync()
         {
             var dataBaseNumber = 0;
