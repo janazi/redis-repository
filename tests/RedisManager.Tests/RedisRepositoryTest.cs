@@ -57,25 +57,22 @@ namespace Jnz.RedisRepository.Tests
         }
 
         [Fact]
-        public void Should_Get_and_Lock_Key()
+        public async Task Should_Get_and_Lock_Key()
         {
             var obj = new MyObject
             {
                 Name = "TestLock",
-                TempoEmCache = TimeSpan.FromMilliseconds(20)
+                TempoEmCache = TimeSpan.FromMilliseconds(200)
             };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 
-            redisRepository.SetAsync(obj).GetAwaiter().GetResult();
+            await redisRepository.SetAsync(obj);
 
-            var objCache = redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(3))
-                .GetAwaiter()
-                .GetResult();
+            var objCache = await redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(3));
 
-            Assert.Throws<KeyLockedException>(() =>
-                redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(1)).GetAwaiter()
-                    .GetResult());
+            await Assert.ThrowsAsync<KeyLockedException>(async () =>
+                await redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(1)));
         }
 
 

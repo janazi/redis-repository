@@ -33,7 +33,7 @@ namespace Jnz.RedisRepository
 
             var db = _connectionMultiplexer.GetDatabase(obj.GetDatabaseNumber());
 
-            await db.StringSetAsync(GetFullKey<T>(obj.GetKey()), bytes, obj.GetExpiration());
+            var response = await db.StringSetAsync(GetFullKey<T>(obj.GetKey()), bytes, obj.GetExpiration());
         }
 
         public async Task SetAsync<T>(T obj, string key, string index, int databaseNumber = 0, TimeSpan? expiration = null)
@@ -106,7 +106,7 @@ namespace Jnz.RedisRepository
             var db = GetDatabase<T>();
             var fullKey = GetFullKey<T>(key);
             var obj = await GetAsync<T>(key);
-
+            if (obj is null) return obj;
             var isLocked = await _redisLockManager.GetLockAsync(fullKey, db.Database, lockTime);
             if (!isLocked) throw new KeyLockedException(LockedKeyError);
             return obj;
