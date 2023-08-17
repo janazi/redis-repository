@@ -117,7 +117,7 @@ namespace Jnz.RedisRepository
         {
             var db = GetDatabase(dbNumber);
             var obj = await GetAsync<T>(indexKey, dbNumber);
-
+            if (obj is null) return obj;
             var isLocked = await _redisLockManager.GetLockAsync(indexKey, db.Database, lockTime);
             if (!isLocked) throw new KeyLockedException(LockedKeyError);
             return obj;

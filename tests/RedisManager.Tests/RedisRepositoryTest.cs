@@ -75,6 +75,44 @@ namespace Jnz.RedisRepository.Tests
                 await redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(1)));
         }
 
+        [Fact]
+        public async Task WhenObjIsNull_WithoutDbNumber_ShouldNotCreateLock()
+        {
+            var obj = new MyObject
+            {
+                Name = "TestLock",
+                TempoEmCache = TimeSpan.FromMilliseconds(200)
+            };
+            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
+            var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
+            var objCache = await redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(3));
+
+            var lockAsync = await redisLockManager.GetLockAsync(obj.GetKey(), 0, TimeSpan.FromSeconds(2));
+            var lockReleased = await redisLockManager.ReleaseLockAsync(obj.GetKey(), 0);
+            Assert.Null(objCache);
+            Assert.True(lockAsync);
+            Assert.True(lockReleased);
+        }
+
+        [Fact]
+        public async Task WhenObjIsNull_WithDbNumber_ShouldNotCreateLock()
+        {
+            var obj = new MyObject
+            {
+                Name = "TestLock",
+                TempoEmCache = TimeSpan.FromMilliseconds(200)
+            };
+            var redisRepository = _serviceProvider.GetService<IRedisRepository>();
+            var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
+            var objCache = await redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(3), 0);
+
+            var lockAsync = await redisLockManager.GetLockAsync(obj.GetKey(), 0, TimeSpan.FromSeconds(2));
+            var lockReleased = await redisLockManager.ReleaseLockAsync(obj.GetKey(), 0);
+            Assert.Null(objCache);
+            Assert.True(lockAsync);
+            Assert.True(lockReleased);
+        }
+
 
         [Fact]
         public void Should_Be_Remored_After_Expiration_500ms()

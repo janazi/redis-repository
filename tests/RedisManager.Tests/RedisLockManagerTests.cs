@@ -19,12 +19,12 @@ namespace Jnz.RedisRepository.Tests
         [Fact]
         public void Should_Release_Lock()
         {
-            const string key = "TestLockRelease";
+            const string key = "TestLockRelease:112";
 
 
             var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
 
-            var lockAcquired = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(1000)).GetAwaiter()
+            var lockAcquired = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(10000000)).GetAwaiter()
                 .GetResult();
 
             Assert.True(lockAcquired);
