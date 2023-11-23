@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Jnz.RedisRepository.Repositories;
 
-public partial class RedisRepository : RepositoryBase, IRedisRepositoryNew
+public partial class RedisRepositoryNew : RepositoryBase, IRedisRepositoryNew
 {
-    public RedisRepository(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer, IRedisLockManager redisLockManager) : base(connectionMultiplexer, serializer, redisLockManager)
-    {
-    }
+    public RedisRepositoryNew(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer, IRedisLockManager redisLockManager) :
+        base(connectionMultiplexer, serializer, redisLockManager)
+    { }
 
     public bool SetString(string key, string value, TimeSpan? timeToLive, int databaseNumber = 0)
     {
@@ -43,5 +43,17 @@ public partial class RedisRepository : RepositoryBase, IRedisRepositoryNew
         var isLocked = await db.LockTakeAsync(keyLock, Token, lockTimeToLive);
 
         return isLocked is false ? new Result<string>(new KeyLockedException(LockedKeyError)) : await GetStringAsync(key, databaseNumber);
+    }
+
+    public bool DeleteKey(string key, int databaseNumber = 0)
+    {
+        var db = GetDatabase(databaseNumber);
+        return db.KeyDelete(key);
+    }
+
+    public async Task<bool> DeleteKeyAsync(string key, int databaseNumber = 0)
+    {
+        var db = GetDatabase(databaseNumber);
+        return await db.KeyDeleteAsync(key);
     }
 }

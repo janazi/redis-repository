@@ -42,9 +42,15 @@ namespace Jnz.RedisRepository
             var db = _connectionMultiplexer.GetDatabase(databaseNumber);
             var token = Environment.MachineName;
             var keyLock = $"{KeyLockDefaultPrefix}:{key}";
-            var isLockRelesead = await db.LockReleaseAsync(keyLock, token);
+            var isLockReleased = await db.LockReleaseAsync(keyLock, token);
 
-            return isLockRelesead;
+            return isLockReleased;
+        }
+
+        public async Task<RedisValue> GetLockInfo(string teststringset)
+        {
+            var db = _connectionMultiplexer.GetDatabase(1);
+            return await db.LockQueryAsync(teststringset);
         }
     }
 }

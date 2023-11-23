@@ -25,7 +25,7 @@ namespace Jnz.RedisRepository.Tests
         [Fact]
         public void Should_Save_InCache()
         {
-            var obj = new MyObject
+            var obj = new SomeObject
             {
                 Name = "Test",
                 TempoEmCache = TimeSpan.FromMilliseconds(200)
@@ -35,7 +35,7 @@ namespace Jnz.RedisRepository.Tests
 
             redisRepository.SetAsync(obj).GetAwaiter().GetResult();
 
-            var objCache = redisRepository.GetAsync<MyObject>(obj.GetKey()).GetAwaiter()
+            var objCache = redisRepository.GetAsync<SomeObject>(obj.GetKey()).GetAwaiter()
                 .GetResult();
 
             Assert.NotNull(objCache);
@@ -59,7 +59,7 @@ namespace Jnz.RedisRepository.Tests
         [Fact]
         public async Task Should_Get_and_Lock_Key()
         {
-            var obj = new MyObject
+            var obj = new SomeObject
             {
                 Name = "TestLock",
                 TempoEmCache = TimeSpan.FromMilliseconds(200)
@@ -69,23 +69,23 @@ namespace Jnz.RedisRepository.Tests
 
             await redisRepository.SetAsync(obj);
 
-            var objCache = await redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(3));
+            var objCache = await redisRepository.GetWithLockAsync<SomeObject>(obj.GetKey(), TimeSpan.FromSeconds(3));
 
             await Assert.ThrowsAsync<KeyLockedException>(async () =>
-                await redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(1)));
+                await redisRepository.GetWithLockAsync<SomeObject>(obj.GetKey(), TimeSpan.FromSeconds(1)));
         }
 
         [Fact]
         public async Task WhenObjIsNull_WithoutDbNumber_ShouldNotCreateLock()
         {
-            var obj = new MyObject
+            var obj = new SomeObject
             {
                 Name = "TestLock",
                 TempoEmCache = TimeSpan.FromMilliseconds(200)
             };
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
             var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
-            var objCache = await redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(3));
+            var objCache = await redisRepository.GetWithLockAsync<SomeObject>(obj.GetKey(), TimeSpan.FromSeconds(3));
 
             var lockAsync = await redisLockManager.GetLockAsync(obj.GetKey(), 0, TimeSpan.FromSeconds(2));
             var lockReleased = await redisLockManager.ReleaseLockAsync(obj.GetKey(), 0);
@@ -97,14 +97,14 @@ namespace Jnz.RedisRepository.Tests
         [Fact]
         public async Task WhenObjIsNull_WithDbNumber_ShouldNotCreateLock()
         {
-            var obj = new MyObject
+            var obj = new SomeObject
             {
                 Name = "TestLock",
                 TempoEmCache = TimeSpan.FromMilliseconds(200)
             };
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
             var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
-            var objCache = await redisRepository.GetWithLockAsync<MyObject>(obj.GetKey(), TimeSpan.FromSeconds(3), 0);
+            var objCache = await redisRepository.GetWithLockAsync<SomeObject>(obj.GetKey(), TimeSpan.FromSeconds(3), 0);
 
             var lockAsync = await redisLockManager.GetLockAsync(obj.GetKey(), 0, TimeSpan.FromSeconds(2));
             var lockReleased = await redisLockManager.ReleaseLockAsync(obj.GetKey(), 0);
@@ -117,7 +117,7 @@ namespace Jnz.RedisRepository.Tests
         [Fact]
         public void Should_Be_Remored_After_Expiration_500ms()
         {
-            var obj = new MyObject { Name = "TestLock", TempoEmCache = TimeSpan.FromMilliseconds(550) };
+            var obj = new SomeObject { Name = "TestLock", TempoEmCache = TimeSpan.FromMilliseconds(550) };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 
@@ -125,7 +125,7 @@ namespace Jnz.RedisRepository.Tests
 
             Thread.Sleep(550);
 
-            var objCache = redisRepository.GetAsync<MyObject>(obj.GetKey()).GetAwaiter()
+            var objCache = redisRepository.GetAsync<SomeObject>(obj.GetKey()).GetAwaiter()
                 .GetResult();
 
             Assert.Null(objCache);
@@ -135,20 +135,20 @@ namespace Jnz.RedisRepository.Tests
         public void Deve_Remover_Key()
         {
             const string name = "TestLock";
-            var obj = new MyObject { Name = name };
+            var obj = new SomeObject { Name = name };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 
             redisRepository.SetAsync(obj).GetAwaiter().GetResult();
 
-            var objCache = redisRepository.GetAsync<MyObject>(obj.GetKey()).GetAwaiter()
+            var objCache = redisRepository.GetAsync<SomeObject>(obj.GetKey()).GetAwaiter()
                 .GetResult();
 
             Assert.NotNull(objCache);
 
-            redisRepository.DeleteKeyAsync<MyObject>(name).GetAwaiter().GetResult();
+            redisRepository.DeleteKeyAsync<SomeObject>(name).GetAwaiter().GetResult();
 
-            objCache = redisRepository.GetAsync<MyObject>(obj.GetKey()).GetAwaiter()
+            objCache = redisRepository.GetAsync<SomeObject>(obj.GetKey()).GetAwaiter()
                 .GetResult();
 
             Assert.Null(objCache);
@@ -161,26 +161,26 @@ namespace Jnz.RedisRepository.Tests
             const string hash = "Hash";
             const string hash2 = "Hash2";
 
-            var obj = new MyObject { Name = key, TempoEmCache = TimeSpan.FromMilliseconds(20) };
+            var obj = new SomeObject { Name = key, TempoEmCache = TimeSpan.FromMilliseconds(20) };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 
             redisRepository.SetHashAsync(obj, key, hash).GetAwaiter().GetResult();
             redisRepository.SetHashAsync(obj, key, hash2).GetAwaiter().GetResult();
 
-            var hashCache = redisRepository.GetHashAsync<MyObject>(key, hash).GetAwaiter().GetResult();
+            var hashCache = redisRepository.GetHashAsync<SomeObject>(key, hash).GetAwaiter().GetResult();
 
             Assert.NotNull(hashCache);
 
-            redisRepository.DeleteHashAsync<MyObject>(key, hash).GetAwaiter().GetResult();
+            redisRepository.DeleteHashAsync<SomeObject>(key, hash).GetAwaiter().GetResult();
 
-            hashCache = redisRepository.GetHashAsync<MyObject>(key, hash).GetAwaiter().GetResult();
+            hashCache = redisRepository.GetHashAsync<SomeObject>(key, hash).GetAwaiter().GetResult();
 
             Assert.Null(hashCache);
 
-            var hash2Obj = redisRepository.GetHashAsync<MyObject>(key, hash2).GetAwaiter().GetResult();
+            var hash2Obj = redisRepository.GetHashAsync<SomeObject>(key, hash2).GetAwaiter().GetResult();
             Assert.NotNull(hash2Obj);
-            redisRepository.DeleteHashAsync<MyObject>(key, hash2).GetAwaiter().GetResult();
+            redisRepository.DeleteHashAsync<SomeObject>(key, hash2).GetAwaiter().GetResult();
         }
 
         [Fact]
@@ -190,15 +190,15 @@ namespace Jnz.RedisRepository.Tests
             const string key = "TestLock";
             const string key2 = "TestLock2";
 
-            var obj = new MyObject { Name = key };
-            var obj2 = new MyObject { Name = key2 };
+            var obj = new SomeObject { Name = key };
+            var obj2 = new SomeObject { Name = key2 };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 
             redisRepository.SetAsync(obj).GetAwaiter().GetResult();
             redisRepository.SetAsync(obj2).GetAwaiter().GetResult();
 
-            var keys = redisRepository.GetAllKeysByPattern(obj.GetDatabaseNumber(), "MyObject:*");
+            var keys = redisRepository.GetAllKeysByPattern(obj.GetDatabaseNumber(), "SomeObject:*");
 
             Assert.Equal(2, keys.Count());
         }
@@ -208,7 +208,7 @@ namespace Jnz.RedisRepository.Tests
         public void Deve_Gravar_e_Buscar_data()
         {
             var data = DateTime.Now;
-            var obj = new MyObject
+            var obj = new SomeObject
             {
                 Name = "TestData",
                 Data = DateTime.Now,
@@ -219,7 +219,7 @@ namespace Jnz.RedisRepository.Tests
 
             redisRepository.SetAsync(obj).GetAwaiter().GetResult();
 
-            var objCache = redisRepository.GetAsync<MyObject>(obj.GetKey()).GetAwaiter()
+            var objCache = redisRepository.GetAsync<SomeObject>(obj.GetKey()).GetAwaiter()
                 .GetResult();
 
 
@@ -230,13 +230,13 @@ namespace Jnz.RedisRepository.Tests
         public void Deve_Gravar_Objeto_Informando_Indice()
         {
             const string index = "NovoIndice";
-            var obj = new MyObject { Name = index, TempoEmCache = TimeSpan.FromMilliseconds(300) };
+            var obj = new SomeObject { Name = index, TempoEmCache = TimeSpan.FromMilliseconds(300) };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 
             redisRepository.Set(obj, index);
 
-            var objIndice = redisRepository.Get<MyObject>(index, obj.GetKey());
+            var objIndice = redisRepository.Get<SomeObject>(index, obj.GetKey());
 
             Assert.NotNull(objIndice);
         }
@@ -246,13 +246,13 @@ namespace Jnz.RedisRepository.Tests
         {
             const string index = "NovoIndice";
             const string hash = "Hash";
-            var obj = new MyObject { Name = "Indice", TempoEmCache = TimeSpan.FromMilliseconds(20) };
+            var obj = new SomeObject { Name = "Indice", TempoEmCache = TimeSpan.FromMilliseconds(20) };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 
             redisRepository.SetHash(obj, obj.GetKey(), hash, index);
 
-            var objIndice = redisRepository.GetHash<MyObject>(obj.GetKey(), hash, index);
+            var objIndice = redisRepository.GetHash<SomeObject>(obj.GetKey(), hash, index);
 
             Assert.NotNull(objIndice);
         }
@@ -260,23 +260,23 @@ namespace Jnz.RedisRepository.Tests
         [Fact]
         public async Task WhenCallingUsingClass_ShouldCreateHashUsingParameters()
         {
-            const string index = "MyObject";
+            const string index = "SomeObject";
             const string hash = "UniqueIdInsideHash";
-            const string key = "MyObjectUniqueKey";
+            const string key = "SomeObjectUniqueKey";
             const int databaseNumber = 0;
-            var obj = new MyObjectWithoutInterface { Title = "Hash", CreatedOn = DateTime.Now.ToUniversalTime() };
+            var obj = new SomeObjectWithoutInterface { Title = "Hash", CreatedOn = DateTime.Now.ToUniversalTime() };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 
             await redisRepository.SetHashAsync(obj, key, hash, index, databaseNumber);
 
-            var objSaved = await redisRepository.GetHashAsync<MyObjectWithoutInterface>(key, hash, index, 0);
+            var objSaved = await redisRepository.GetHashAsync<SomeObjectWithoutInterface>(key, hash, index, 0);
 
             Assert.NotNull(objSaved);
 
             await redisRepository.DeleteHashAsync(key, hash, index, databaseNumber);
 
-            var objDeleted = await redisRepository.GetHashAsync<MyObjectWithoutInterface>(key, hash, index, 0);
+            var objDeleted = await redisRepository.GetHashAsync<SomeObjectWithoutInterface>(key, hash, index, 0);
 
             Assert.Null(objDeleted);
         }
@@ -284,25 +284,25 @@ namespace Jnz.RedisRepository.Tests
         [Fact]
         public async Task ShouldReturnAllHashEntities()
         {
-            const string index = "MyObject";
+            const string index = "SomeObject";
             const string hash = "UniqueIdInsideHash";
             const string hash2 = "UniqueIdInsideHash2";
             const string key = "MyHashUniqueKey";
             const int databaseNumber = 0;
 
-            var obj = new MyObjectWithoutInterface { Title = "HashObject", CreatedOn = DateTime.Now.ToUniversalTime() };
-            var obj2 = new MyObjectWithoutInterface { Title = "HashObject2", CreatedOn = DateTime.Now.ToUniversalTime() };
+            var obj = new SomeObjectWithoutInterface { Title = "HashObject", CreatedOn = DateTime.Now.ToUniversalTime() };
+            var obj2 = new SomeObjectWithoutInterface { Title = "HashObject2", CreatedOn = DateTime.Now.ToUniversalTime() };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
 
             await redisRepository.SetHashAsync(obj, key, hash, index, databaseNumber);
             await redisRepository.SetHashAsync(obj2, key, hash2, index, databaseNumber);
 
-            var myObjects = await redisRepository
-                .GetAllHashAsync<MyObjectWithoutInterface>(key, index, databaseNumber);
+            var SomeObjects = await redisRepository
+                .GetAllHashAsync<SomeObjectWithoutInterface>(key, index, databaseNumber);
 
-            Assert.NotNull(myObjects);
-            Assert.Equal(2, myObjects.Count());
+            Assert.NotNull(SomeObjects);
+            Assert.Equal(2, SomeObjects.Count());
 
             await redisRepository.DeleteHashAsync(key, hash, index, databaseNumber);
             await redisRepository.DeleteHashAsync(key, hash2, index, databaseNumber);
@@ -338,11 +338,11 @@ namespace Jnz.RedisRepository.Tests
         [Fact]
         public async Task ShouldCreateSet_WithMembersUsingGenerics()
         {
-            var memberValue = new MyObject() { Name = "teste" };
+            var memberValue = new SomeObject() { Name = "teste" };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
-            await redisRepository.SetAddAsync<MyObject>(0, KeyForSet, memberValue);
-            var data = await redisRepository.GetSetMembersAsync<MyObject>(0, KeyForSet);
+            await redisRepository.SetAddAsync<SomeObject>(0, KeyForSet, memberValue);
+            var data = await redisRepository.GetSetMembersAsync<SomeObject>(0, KeyForSet);
             await redisRepository.RemoveEntireSetAsync(0, KeyForSet);
             Assert.Equal(memberValue.Name, data[0].Name);
         }
@@ -371,19 +371,19 @@ namespace Jnz.RedisRepository.Tests
         [Fact]
         public async Task ShouldRemove_MemberUsingGenerics()
         {
-            var memberValue = new MyObject() { Name = "teste" };
-            var member2Value = new MyObject() { Name = "teste2" };
+            var memberValue = new SomeObject() { Name = "teste" };
+            var member2Value = new SomeObject() { Name = "teste2" };
 
             var redisRepository = _serviceProvider.GetService<IRedisRepository>();
-            await redisRepository.SetAddAsync<MyObject>(0, KeyForSet, memberValue);
-            await redisRepository.SetAddAsync<MyObject>(0, KeyForSet, member2Value);
+            await redisRepository.SetAddAsync<SomeObject>(0, KeyForSet, memberValue);
+            await redisRepository.SetAddAsync<SomeObject>(0, KeyForSet, member2Value);
 
 
-            var objects = await redisRepository.GetSetMembersAsync<MyObject>(0, KeyForSet);
+            var objects = await redisRepository.GetSetMembersAsync<SomeObject>(0, KeyForSet);
             Assert.Equal(2, objects.Count);
 
             await redisRepository.RemoveMemberSetAsync(0, KeyForSet, memberValue);
-            objects = await redisRepository.GetSetMembersAsync<MyObject>(0, KeyForSet);
+            objects = await redisRepository.GetSetMembersAsync<SomeObject>(0, KeyForSet);
             await redisRepository.RemoveEntireSetAsync(0, KeyForSet);
             Assert.Single(objects);
             Assert.Contains(member2Value, objects);
@@ -397,7 +397,7 @@ namespace Jnz.RedisRepository.Tests
             const string objKey = "1";
             const string indexWithKey = $"{indexName}:{objKey}";
             var createdDate = DateTime.Now;
-            var obj = new MyObjectWithoutInterface
+            var obj = new SomeObjectWithoutInterface
             {
                 Title = "TestLock",
                 CreatedOn = createdDate
@@ -407,13 +407,13 @@ namespace Jnz.RedisRepository.Tests
 
             redisRepository.SetAsync(obj, objKey, indexName).GetAwaiter().GetResult();
 
-            var objCache = redisRepository.GetWithLockAsync<MyObjectWithoutInterface>(indexWithKey, TimeSpan.FromSeconds(10), 0)
+            var objCache = redisRepository.GetWithLockAsync<SomeObjectWithoutInterface>(indexWithKey, TimeSpan.FromSeconds(10), 0)
                 .GetAwaiter()
                 .GetResult();
 
             Assert.NotNull(objCache);
             Assert.Throws<KeyLockedException>(() =>
-                redisRepository.GetWithLockAsync<MyObjectWithoutInterface>(indexWithKey, TimeSpan.FromSeconds(1), 0).GetAwaiter()
+                redisRepository.GetWithLockAsync<SomeObjectWithoutInterface>(indexWithKey, TimeSpan.FromSeconds(1), 0).GetAwaiter()
                     .GetResult());
         }
 

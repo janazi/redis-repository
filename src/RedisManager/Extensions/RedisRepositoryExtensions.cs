@@ -1,4 +1,5 @@
 ﻿using Jnz.RedisRepository.Interfaces;
+using Jnz.RedisRepository.Repositories;
 using MessagePack;
 using MessagePack.Resolvers;
 using Microsoft.Extensions.Configuration;
@@ -37,11 +38,11 @@ namespace Jnz.RedisRepository.Extensions
             if (redisOptions is null)
                 throw new ArgumentException("RedisOptions configuration section is missing");
 
-            return AddRedisRepository(services, configuration, redisOptions, formatterResolver);
+            return AddRedisRepository(services, redisOptions, formatterResolver);
         }
 
         public static IServiceCollection AddRedisRepository(this IServiceCollection services,
-            IConfiguration configuration, RedisOptions redisOptions, IFormatterResolver formatterResolver = null)
+             RedisOptions redisOptions, IFormatterResolver formatterResolver = null)
         {
             var options = new ConfigurationOptions
             {
@@ -64,6 +65,7 @@ namespace Jnz.RedisRepository.Extensions
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(options));
             services.AddSingleton<ISerializer, RedisSerializer>();
             services.AddSingleton<IRedisRepository, RedisRepository>();
+            services.AddSingleton<IRedisRepositoryNew, RedisRepositoryNew>();
             services.AddSingleton<IRedisLockManager, RedisLockManager>();
 
             return services;

@@ -27,9 +27,9 @@ namespace RedisManager.Tests
     }
 
     [MessagePackObject]
-    public class MyObject : IRedisCacheable, IEquatable<MyObject>
+    public class SomeObject : IRedisCacheable, IEquatable<SomeObject>
     {
-        public MyObject()
+        public SomeObject()
         {
             TempoEmCache = TimeSpan.FromMilliseconds(500);
         }
@@ -41,7 +41,7 @@ namespace RedisManager.Tests
 
         public string GetIndex()
         {
-            return "MyObject";
+            return "SomeObject";
         }
 
         public int GetDatabaseNumber()
@@ -59,13 +59,13 @@ namespace RedisManager.Tests
             return Name;
         }
 
-        public bool Equals(MyObject other)
+        public bool Equals(SomeObject other)
         {
             return this.Name == other.Name;
         }
     }
 
-    public class MyObjectWithoutInterface
+    public class SomeObjectWithoutInterface
     {
         public string Title { get; set; }
         public DateTime CreatedOn { get; set; }
