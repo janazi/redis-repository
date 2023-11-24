@@ -28,9 +28,9 @@ namespace Jnz.RedisRepository.Interfaces
         Task<bool> SetAsync<T>(T obj, string key, int databaseNumber = 0) where T : class;
         string GetString(string key, int databaseNumber = 0);
         Task<string> GetStringAsync(string key, int databaseNumber = 0);
-        Task<T> GetWithLockAsync<T>(string key, TimeSpan lockTime, int databaseNumber = 0) where T : class;
-        T Get<T>(T obj, string key, int databaseNumber = 0) where T : class;
-        Task<T> GetAsync<T>(T obj, string key, int databaseNumber = 0) where T : class;
+        Task<T> GetWithLockAsync<T>(string key, TimeSpan lockTimeToLive, int databaseNumber = 0) where T : class;
+        T Get<T>(string key, int databaseNumber = 0) where T : class;
+        Task<T> GetAsync<T>(string key, int databaseNumber = 0) where T : class;
         Task<Result<string>> GetStringWithLockAsync(string key, TimeSpan lockTimeToLive, int databaseNumber = 0);
         Task<bool> SetExpirationAsync(string key, TimeSpan expires, int databaseNumber = 0);
         #endregion

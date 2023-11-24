@@ -50,21 +50,24 @@ public partial class RedisRepository : RepositoryBase, IRedisRepository
         return await db.StringGetAsync(key);
     }
 
-    public async Task<T> GetWithLockAsync<T>(string key, TimeSpan lockTime, int databaseNumber = 0) where T : class
+    public async Task<T> GetWithLockAsync<T>(string key, TimeSpan lockTimeToLive, int databaseNumber = 0) where T : class
     {
         var db = GetDatabase(databaseNumber);
         var bytes = await db.StringGetAsync(key);
-        return bytes.IsNullOrEmpty ? default : Serializer.Deserialize<T>(bytes);
+        var keyLock = $"{KeyLockPrefix}:{key}";
+        var isLocked = await db.LockTakeAsync(keyLock, Token, lockTimeToLive);
+
+        return isLocked is false ? default : Serializer.Deserialize<T>(bytes);
     }
 
-    public T Get<T>(T obj, string key, int databaseNumber = 0) where T : class
+    public T Get<T>(string key, int databaseNumber = 0) where T : class
     {
         var db = GetDatabase(databaseNumber);
         var bytes = db.StringGet(key);
         return bytes.IsNullOrEmpty ? default : Serializer.Deserialize<T>(bytes);
     }
 
-    public async Task<T> GetAsync<T>(T obj, string key, int databaseNumber = 0) where T : class
+    public async Task<T> GetAsync<T>(string key, int databaseNumber = 0) where T : class
     {
         var db = GetDatabase(databaseNumber);
         var bytes = await db.StringGetAsync(key);

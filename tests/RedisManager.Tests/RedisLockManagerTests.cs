@@ -12,7 +12,7 @@ namespace Jnz.RedisRepository.Tests
         private readonly ServiceProvider _serviceProvider = services.ServiceProvider;
 
         [Fact]
-        public async Task Should_Release_Lock()
+        public async Task ShouldReleaseLock()
         {
             const string key = "TestLockRelease:112";
 
@@ -29,17 +29,15 @@ namespace Jnz.RedisRepository.Tests
         }
 
         [Fact]
-        public void Shoud_Acquire_Lock()
+        public async Task ShouldAcquireLock()
         {
             const string key = "TestLockAcquire";
             var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
-            var lockAcquired = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(11150)).GetAwaiter()
-                .GetResult();
+            var lockAcquired = await redisLockManager.GetLockAsync(key, 0, TimeSpan.FromSeconds(1));
 
             Assert.True(lockAcquired);
 
-            var anotherLockAttempt = redisLockManager.GetLockAsync(key, 0, TimeSpan.FromMilliseconds(110)).GetAwaiter()
-                .GetResult();
+            var anotherLockAttempt = await redisLockManager.GetLockAsync(key, 0, TimeSpan.FromSeconds(1));
 
             Assert.False(anotherLockAttempt);
         }
