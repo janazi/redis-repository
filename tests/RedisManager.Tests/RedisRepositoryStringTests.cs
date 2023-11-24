@@ -18,7 +18,7 @@ public class RedisRepositoryStringTests(Services services) : IClassFixture<Servi
         const string value = "TestValue";
         const int databaseNumber = 1;
 
-        var redisRepository = _serviceProvider.GetService<IRedisRepositoryNew>();
+        var redisRepository = _serviceProvider.GetService<IRedisRepository>();
         var isSet = await redisRepository.SetStringAsync(key, value, null, databaseNumber);
         var result = await redisRepository.GetStringAsync(key, databaseNumber);
         // clean test
@@ -35,7 +35,7 @@ public class RedisRepositoryStringTests(Services services) : IClassFixture<Servi
         const string value = "TestValue";
         const int databaseNumber = 1;
 
-        var redisRepository = _serviceProvider.GetService<IRedisRepositoryNew>();
+        var redisRepository = _serviceProvider.GetService<IRedisRepository>();
         var isSet = redisRepository.SetString(key, value, null, databaseNumber);
         var result = redisRepository.GetString(key, databaseNumber);
         // clean test
@@ -52,7 +52,7 @@ public class RedisRepositoryStringTests(Services services) : IClassFixture<Servi
         const string value = "TestValue";
         const int databaseNumber = 1;
 
-        var redisRepository = _serviceProvider.GetService<IRedisRepositoryNew>();
+        var redisRepository = _serviceProvider.GetService<IRedisRepository>();
         var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
         var isSet = await redisRepository.SetStringAsync(key, value, null, databaseNumber);
         var result = await redisRepository.GetStringWithLockAsync(key, TimeSpan.FromSeconds(10), databaseNumber);

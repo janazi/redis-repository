@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Jnz.RedisRepository.Repositories;
 
-public partial class RedisRepositoryNew : IRedisRepositoryNew
+public partial class RedisRepository : IRedisRepository
 {
     public async Task SetHashAsync<T>(T obj, string key, string hashField, int databaseNumber = 0)
         where T : class

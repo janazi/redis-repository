@@ -64,7 +64,7 @@ namespace Jnz.RedisRepository.Extensions
 
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(options));
             services.AddSingleton<ISerializer, RedisSerializer>();
-            services.AddSingleton<IRedisRepositoryNew, RedisRepositoryNew>();
+            services.AddSingleton<IRedisRepository, Repositories.RedisRepository>();
             services.AddSingleton<IRedisLockManager, RedisLockManager>();
 
             return services;

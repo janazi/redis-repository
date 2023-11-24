@@ -19,7 +19,7 @@ public class RedisRepositoryHashTests(Services services) : IClassFixture<Service
         const string hashField = "HashField";
         const int databaseNumber = 1;
         var objectToBeCached = new SomeObjectWithoutInterface { Title = key, CreatedOn = DateTime.Now };
-        var redisRepository = _serviceProvider.GetService<IRedisRepositoryNew>();
+        var redisRepository = _serviceProvider.GetService<IRedisRepository>();
         //ACT
         await redisRepository.SetHashAsync(objectToBeCached, key, hashField, databaseNumber);
         var cachedObject = await redisRepository.GetHashAsync<SomeObjectWithoutInterface>(key, hashField, databaseNumber);
@@ -37,7 +37,7 @@ public class RedisRepositoryHashTests(Services services) : IClassFixture<Service
         const string hashField = "HashField";
         const int databaseNumber = 1;
         var objectToBeCached = new SomeObjectWithoutInterface { Title = key, CreatedOn = DateTime.Now };
-        var redisRepository = _serviceProvider.GetService<IRedisRepositoryNew>();
+        var redisRepository = _serviceProvider.GetService<IRedisRepository>();
         await redisRepository.SetHashAsync(objectToBeCached, key, hashField, databaseNumber);
         //ACT
         var cachedObject = redisRepository.GetHash<SomeObjectWithoutInterface>(key, hashField, databaseNumber);
@@ -55,7 +55,7 @@ public class RedisRepositoryHashTests(Services services) : IClassFixture<Service
         const string hashField = "HashField";
         const int databaseNumber = 1;
         var objectToBeCached = new SomeObjectWithoutInterface { Title = key, CreatedOn = DateTime.Now };
-        var redisRepository = _serviceProvider.GetService<IRedisRepositoryNew>();
+        var redisRepository = _serviceProvider.GetService<IRedisRepository>();
         var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
         await redisRepository.SetHashAsync(objectToBeCached, key, hashField, databaseNumber);
         //ACT
@@ -78,7 +78,7 @@ public class RedisRepositoryHashTests(Services services) : IClassFixture<Service
         const string hashField2 = "HashField2";
         const int databaseNumber = 1;
         var objectToBeCached = new SomeObjectWithoutInterface { Title = key, CreatedOn = DateTime.Now };
-        var redisRepository = _serviceProvider.GetService<IRedisRepositoryNew>();
+        var redisRepository = _serviceProvider.GetService<IRedisRepository>();
         await redisRepository.SetHashAsync(objectToBeCached, key, hashField, databaseNumber);
         await redisRepository.SetHashAsync(objectToBeCached, key, hashField2, databaseNumber);
         //ACT
