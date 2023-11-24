@@ -6,8 +6,11 @@ using Xunit;
 
 namespace Jnz.RedisRepository.Tests;
 
-[CollectionDefinition(nameof(RedisRepositoryStringTests))]
-public class RedisRepositoryHashTests(Services services) : IClassFixture<Services>
+[CollectionDefinition(nameof(RedisCollection))]
+public class RedisCollection : ICollectionFixture<Services>;
+
+[Collection(nameof(RedisCollection))]
+public class RedisRepositoryHashTests(Services services)
 {
     private readonly ServiceProvider _serviceProvider = services.ServiceProvider;
 

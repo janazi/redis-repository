@@ -12,5 +12,6 @@
         public bool AllowAdmin { get; set; }
         public bool Ssl { get; set; }
         public int ConnectRetry { get; set; }
+
     }
 }

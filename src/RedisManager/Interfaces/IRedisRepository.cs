@@ -8,13 +8,6 @@ namespace Jnz.RedisRepository.Interfaces
 
     public interface IRedisRepository
     {
-        #region Set
-
-        Task<bool> AddSetAsync<T>(T obj, string key, int dataBaseNumber = 0) where T : class;
-        Task<bool> AddSetAsync(string key, string value, int databaseNumber = 0);
-
-        #endregion
-
         #region Hash
 
         Task SetHashAsync<T>(T obj, string key, string hashField, int databaseNumber = 0) where T : class;
@@ -36,7 +29,7 @@ namespace Jnz.RedisRepository.Interfaces
         string GetString(string key, int databaseNumber = 0);
         Task<string> GetStringAsync(string key, int databaseNumber = 0);
         Task<T> GetWithLockAsync<T>(string key, TimeSpan lockTime, int databaseNumber = 0) where T : class;
-        Task<T> Get<T>(T obj, string key, int databaseNumber = 0) where T : class;
+        T Get<T>(T obj, string key, int databaseNumber = 0) where T : class;
         Task<T> GetAsync<T>(T obj, string key, int databaseNumber = 0) where T : class;
         Task<Result<string>> GetStringWithLockAsync(string key, TimeSpan lockTimeToLive, int databaseNumber = 0);
         Task<bool> SetExpirationAsync(string key, TimeSpan expires, int databaseNumber = 0);
