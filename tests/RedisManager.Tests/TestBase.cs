@@ -4,8 +4,9 @@ using MessagePack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Testcontainers.Redis;
 
-namespace RedisManager.Tests
+namespace Jnz.RedisRepository.Tests
 {
     public class Services
     {
@@ -17,6 +18,13 @@ namespace RedisManager.Tests
                 .AddJsonFile("appsettings.json")
                 .Build();
 
+            var redisContainer = new RedisBuilder()
+                .WithImage("redis:7.0")
+                .WithExposedPort(6379)
+                .WithPortBinding(6379)
+                .Build();
+
+            redisContainer.StartAsync().GetAwaiter().GetResult();
 
             serviceCollection.AddRedisRepository(configuration);
 

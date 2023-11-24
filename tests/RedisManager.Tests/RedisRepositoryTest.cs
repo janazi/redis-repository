@@ -1,6 +1,5 @@
 using Jnz.RedisRepository.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using RedisManager.Tests;
 using System;
 using System.Collections.Generic;
 using System.Linq;

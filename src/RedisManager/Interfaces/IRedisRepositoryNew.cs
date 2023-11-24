@@ -11,6 +11,7 @@ namespace Jnz.RedisRepository.Interfaces
 
         Task SetHashAsync<T>(T obj, string key, string hashField, int databaseNumber = 0) where T : class;
         Task<T> GetHashAsync<T>(string key, string hashField, int databaseNumber = 0) where T : class;
+        T GetHash<T>(string key, string hashField, int databaseNumber = 0) where T : class;
         Task DeleteHashAsync(string key, string hashField, int databaseNumber = 0);
 
         #endregion

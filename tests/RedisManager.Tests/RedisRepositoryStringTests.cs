@@ -1,12 +1,12 @@
 ﻿using Jnz.RedisRepository.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using RedisManager.Tests;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Jnz.RedisRepository.Tests;
 
+[CollectionDefinition(nameof(RedisRepositoryStringTests))]
 public class RedisRepositoryStringTests(Services services) : IClassFixture<Services>
 {
     private readonly ServiceProvider _serviceProvider = services.ServiceProvider;
