@@ -1,5 +1,6 @@
 ﻿using LanguageExt.Common;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Jnz.RedisRepository.Interfaces
@@ -12,7 +13,10 @@ namespace Jnz.RedisRepository.Interfaces
         Task SetHashAsync<T>(T obj, string key, string hashField, int databaseNumber = 0) where T : class;
         Task<T> GetHashAsync<T>(string key, string hashField, int databaseNumber = 0) where T : class;
         T GetHash<T>(string key, string hashField, int databaseNumber = 0) where T : class;
+        Task<T> GetHashWithLockAsync<T>(string key, string hashField, TimeSpan lockTime, int databaseNumber = 0) where T : class;
+        Task<ICollection<T>> GetAllHashAsync<T>(string key, int databaseNumber = 0) where T : class;
         Task DeleteHashAsync(string key, string hashField, int databaseNumber = 0);
+        void DeleteHash(string key, string hashField, int databaseNumber = 0);
 
         #endregion
 

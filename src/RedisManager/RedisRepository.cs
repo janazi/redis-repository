@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Jnz.RedisRepository
 {
 
-    public class RedisRepository : IRedisRepository
+    public class RedisRepository
     {
         private const string LockedKeyError = "Key locked by another process";
         private const string KeyLockDefaultPrefix = "Lock";
@@ -82,23 +82,6 @@ namespace Jnz.RedisRepository
             db.StringSet(fullKey, bytes, obj.GetExpiration());
         }
 
-        public void SetHash<T>(T obj, string key, string hash)
-            where T : IRedisCacheable
-        {
-            var bytes = _serializer.Serialize(obj);
-            var db = GetDatabase<T>();
-            var fullKey = GetFullKey<T>(key);
-            db.HashSetAsync(fullKey, new HashEntry[] { new(hash, bytes) });
-        }
-
-        public void SetHash<T>(T obj, string key, string hash, string index)
-            where T : IRedisCacheable
-        {
-            var bytes = _serializer.Serialize(obj);
-            var db = GetDatabase<T>();
-            var fullKey = $"{index}:{key}";
-            db.HashSetAsync(fullKey, new HashEntry[] { new(hash, bytes) });
-        }
 
         public async Task<T> GetWithLockAsync<T>(string key, TimeSpan lockTime)
             where T : IRedisCacheable
@@ -154,22 +137,6 @@ namespace Jnz.RedisRepository
         {
             var db = GetDatabase(dataBaseNumber);
             await db.KeyDeleteAsync(key);
-        }
-
-        public async Task DeleteHashAsync<T>(string key, string hash)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-            var fullKey = GetFullKey<T>(key);
-
-            await db.HashDeleteAsync(fullKey, hash);
-        }
-        public async Task DeleteHashAsync(string key, string hash, string index, int databaseNumber)
-        {
-            var db = GetDatabase(databaseNumber);
-            var fullKey = $"{index}:{key}";
-
-            await db.HashDeleteAsync(fullKey, hash);
         }
 
         public IEnumerable<string> GetAllKeysByPattern(int dataBaseNumber, string pattern, int pageSize = 100)
@@ -253,93 +220,6 @@ namespace Jnz.RedisRepository
             var bytes = db.StringGet(fullKey);
 
             return bytes.IsNullOrEmpty ? default : _serializer.Deserialize<T>(bytes);
-        }
-
-        public T GetHash<T>(string key, string hash)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-
-            var fullKey = GetFullKey<T>(key);
-            var dados = db.HashGet(fullKey, hash);
-
-            return dados.IsNull ? default : _serializer.Deserialize<T>(dados);
-        }
-
-        public T GetHash<T>(string key, string hash, string index)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-
-            var fullKey = $"{index}:{key}";
-            var dados = db.HashGet(fullKey, hash);
-
-            return dados.IsNull ? default : _serializer.Deserialize<T>(dados);
-        }
-
-        public async Task<T> GetHashAsync<T>(string key, string hash, string index, int databaseNumber)
-        {
-            var db = GetDatabase(databaseNumber);
-
-            var fullKey = $"{index}:{key}";
-            var data = await db.HashGetAsync(fullKey, hash);
-
-            return data.IsNull ? default : _serializer.Deserialize<T>(data);
-        }
-
-        public async Task<IEnumerable<T>> GetAllHashAsync<T>(string key, string index, int databaseNumber)
-        {
-            var db = GetDatabase(databaseNumber);
-
-            var fullKey = $"{index}:{key}";
-
-            var hashEntries = await db.HashGetAllAsync(fullKey);
-
-            return hashEntries.Length == 0 ? default(IEnumerable<T>) :
-                hashEntries.Select(hashEntry => _serializer.Deserialize<T>(hashEntry.Value)).ToList();
-        }
-
-        public async Task SetHashAsync<T>(T obj, string key, string hash)
-            where T : IRedisCacheable
-        {
-            var bytes = _serializer.Serialize(obj);
-            var db = GetDatabase<T>();
-            var fullKey = GetFullKey<T>(key);
-            await db.HashSetAsync(fullKey, new HashEntry[] { new(hash, bytes) });
-        }
-
-        public async Task SetHashAsync<T>(T obj, string key, string hash, string index, int databaseNumber)
-            where T : class
-        {
-            var bytes = _serializer.Serialize(obj);
-            var db = GetDatabase(databaseNumber);
-            var fullKey = $"{index}:{key}";
-            await db.HashSetAsync(fullKey, new HashEntry[] { new(hash, bytes) });
-        }
-
-        public async Task<T> GetHashWithLockAsync<T>(string key, string hash, TimeSpan lockTime)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-            var keyLock = $"{KeyLockDefaultPrefix}:{key}";
-
-            var obj = await GetHashAsync<T>(key, hash);
-            var isLocked = db.LockTake(keyLock, Token, lockTime);
-
-            if (!isLocked) throw new KeyLockedException(LockedKeyError);
-
-            return obj;
-        }
-
-        public async Task<T> GetHashAsync<T>(string key, string hash)
-            where T : IRedisCacheable
-        {
-            var db = GetDatabase<T>();
-
-            var fullKey = GetFullKey<T>(key);
-            var dados = await db.HashGetAsync(fullKey, hash);
-
-            return dados.IsNull ? default : _serializer.Deserialize<T>(dados);
         }
 
         public async Task<bool> SetExpiration<T>(string key, TimeSpan expires)
