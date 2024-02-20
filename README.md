@@ -1,25 +1,50 @@
 # Introduction 
-This project is about a way to use Redis as a NoSQL Database, not only as cache. It make easy to create keys in the right way, with index.
-It intend to make the use of hash and distributed lock easier.
+This project intend to make easy the use of Redis. It was made as a wrapper for the StackExchange.Redis library.
+Jnz Repository makes use of MessagePack to serialize and deserialize objects to and from Redis. 
+MessagePack is a fast and compact binary serialization format. It is faster and smaller than JSON.
+Jnz Repository also provide will a way to create distributed lock that are necessary to deal with Microservices concurrency.
 
 # Getting Started
-There are an extesion method named AddRedisRepository that receives an IConfiguration and look for a section called RedisOptions with the following configurations:
-"RedisOptions": {
-    "hosts": [ "localhost:6379" ],
-    "SyncTimeout": 5000, 
+To initialize Jnz Repository you have two different options.
+1 - Add a section on your appsettings.json file with the following configurations:
+{
+  "RedisOptions": {
+    "Hosts": [ "127.0.0.1:6379" ],
+    "SyncTimeout": 5000,
     "AsyncTimeout": 5000,
     "KeepAlive": 180,
-    "AbortOnConnectFail": false
+    "AllowAdmin": false,
+    "ConnectRetry": 3
   }
-  ps: Sample values in Sync and Async Timeout.
+}
+- SyncTimeout: The time in milliseconds to wait for a synchronous operation to complete.
+- AsyncTimeout: The time in milliseconds to wait for an asynchronous operation to complete.
+- KeepAlive: The time in seconds to keep the connection alive.
+- AllowAdmin: Allow admin operations.
+- ConnectRetry: The number of times to retry to connect to the server.
+- Hosts: The list of hosts to connect to.
+- Password: The password to connect to the server. (optional)
+- Ssl: Use SSL to connect to the server. (optional default: false)
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+To use this option you must set up your appSettings and the call the extension method AddRedisRepository on your IServiceCollection passing
+the IConfiguration as parameter.
+e.g.
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+builder.Services.AddRedisRepository(builder.Configuration);
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+2 - Mannually creation of the RedisOptions object
+e.g.
+builder.Services.AddRedisRepository(new RedisOptions(
+{
+    Hosts = ["127.0.0.1:6379"],
+    SyncTimeout = 5000,
+    AsyncTimeout = 5000,
+    KeepAlive = 180,
+    ConnectRetry = 3
+});
+
+The initilization will create a singleton of the IRedisRepository that will be used to access the Redis database and IRedisLockManager that will be used to create distributed locks.
+
+# Usage
+To use the IRedisRepository you must inject it on your class constructor and use the methods to access the Redis database.
+To use the IRedisLockManager you must inject it on your class constructor and call
