@@ -23,7 +23,7 @@ namespace Jnz.RedisRepository.Interfaces
         #region generic
 
         bool SetString(string key, string value, TimeSpan? timeToLive, int databaseNumber = 0);
-        Task<bool> SetStringAsync(string key, string value, TimeSpan? timeToLive, int databaseNumber = 0);
+        Task<bool> SetStringAsync(string key, string value, TimeSpan? timeToLive = null, int databaseNumber = 0);
         bool Set<T>(T obj, string key, int databaseNumber = 0) where T : class;
         Task<bool> SetAsync<T>(T obj, string key, int databaseNumber = 0) where T : class;
         string GetString(string key, int databaseNumber = 0);

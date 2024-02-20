@@ -65,7 +65,7 @@ public class RedisRepositoryHashTests(Services services)
         var cachedObject = await redisRepository.GetHashWithLockAsync<SomeObjectWithoutInterface>(key, hashField, TimeSpan.FromSeconds(1), databaseNumber);
         await redisRepository.DeleteHashAsync(key, hashField, databaseNumber);
         const string keyLock = $"Lock:{key}";
-        var lockToken = await redisLockManager.GetLockInfo(keyLock);
+        var lockToken = await redisLockManager.GetLockInfo(keyLock, databaseNumber);
         //ASSERT
         Assert.Equal(objectToBeCached.Title, cachedObject.Title);
         Assert.Equal(objectToBeCached.CreatedOn, cachedObject.CreatedOn);

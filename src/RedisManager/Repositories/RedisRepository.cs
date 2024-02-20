@@ -18,7 +18,7 @@ public partial class RedisRepository : RepositoryBase, IRedisRepository
         return db.StringSet(key, value);
     }
 
-    public async Task<bool> SetStringAsync(string key, string value, TimeSpan? timeToLive, int databaseNumber = 0)
+    public async Task<bool> SetStringAsync(string key, string value, TimeSpan? timeToLive = null, int databaseNumber = 0)
     {
         var db = GetDatabase(databaseNumber);
         return await db.StringSetAsync(key, value);

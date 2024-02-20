@@ -74,7 +74,7 @@ namespace Jnz.RedisRepository.Tests
             await redisRepository.DeleteKeyAsync(key);
 
             const string keyLock = $"Lock:{key}";
-            var lockToken = await redisLockManager.GetLockInfo(keyLock);
+            var lockToken = await redisLockManager.GetLockInfo(keyLock, databaseNumber);
 
             Assert.True(isSet);
             Assert.Equal(myObject.Title, result.Title);

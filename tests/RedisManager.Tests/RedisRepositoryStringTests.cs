@@ -54,11 +54,11 @@ public class RedisRepositoryStringTests(Services services)
 
         var redisRepository = _serviceProvider.GetService<IRedisRepository>();
         var redisLockManager = _serviceProvider.GetService<IRedisLockManager>();
-        var isSet = await redisRepository.SetStringAsync(key, value, null, databaseNumber);
+        var isSet = await redisRepository.SetStringAsync(key, value, databaseNumber: databaseNumber);
         var result = await redisRepository.GetStringWithLockAsync(key, TimeSpan.FromSeconds(10), databaseNumber);
 
         const string keyLock = $"Lock:{key}";
-        var lockToken = await redisLockManager.GetLockInfo(keyLock);
+        var lockToken = await redisLockManager.GetLockInfo(keyLock, databaseNumber);
 
         Assert.True(isSet);
         Assert.Equal(value, result);
