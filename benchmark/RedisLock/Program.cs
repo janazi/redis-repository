@@ -26,7 +26,7 @@ namespace Jnz.RedisRepository.Benchmark
                 var connectionMultiplexer = await ConnectionMultiplexer.ConnectAsync(options);
                 var redisSerializer = new RedisSerializer(ContractlessStandardResolver.Instance);
                 var redisLockManager = new RedisLockManager(connectionMultiplexer);
-                var redisRepository = new RedisRepository(connectionMultiplexer, redisSerializer, redisLockManager);
+                var redisRepository = new Repositories.RedisRepository(connectionMultiplexer, redisSerializer, redisLockManager);
 
 
 
@@ -43,7 +43,7 @@ namespace Jnz.RedisRepository.Benchmark
                 var pessoa = redisSerializer.Deserialize<Pessoa>(bin);
 
 
-                await redisRepository.SetAsync(p);
+                await redisRepository.SetAsync<Pessoa>(p, $"Pessoa:{p.Cpf}");
 
 
                 var p2 = await redisRepository.GetWithLockAsync<Pessoa>(cpf.ToString(), TimeSpan.FromMilliseconds(3000));

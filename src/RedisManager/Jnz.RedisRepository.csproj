@@ -4,15 +4,15 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>Jnz.RedisRepository</PackageId>
-    <Version>2</Version>
-    <AssemblyVersion>2</AssemblyVersion>
+    <Version>2.0.1</Version>
+    <AssemblyVersion>2.0.1</AssemblyVersion>
     <Authors>Marcelo Janazi</Authors>
     <Company>Jnz Services</Company>
     <PackageDescription>Redis Repository</PackageDescription>
     <RepositoryUrl>https://github.com/janazi/redis-repository</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>This package intend to incapsulate the use of Redis Hash and Distributed Lock.
+    <Description>This package intend to incapsulate the use of Redis and Distributed Lock.
 </Description>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
