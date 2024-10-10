@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Jnz.RedisRepository\Jnz.RedisRepository.csproj" />
+    <ProjectReference Include="..\src\Jnz.RedisRepository\Jnz.RedisRepository.csproj" />
   </ItemGroup>
 
 
