@@ -10,14 +10,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
-    <PackageReference Include="MessagePack" Version="2.5.140" />
-    <PackageReference Include="Polly" Version="8.3.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.7.17" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+    <PackageReference Include="MessagePack" Version="2.5.172" />
+    <PackageReference Include="Polly" Version="8.4.2" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.16" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RedisManager\Jnz.RedisRepository.csproj" />
+    <ProjectReference Include="..\..\Jnz.RedisRepository\Jnz.RedisRepository.csproj" />
   </ItemGroup>
 
 

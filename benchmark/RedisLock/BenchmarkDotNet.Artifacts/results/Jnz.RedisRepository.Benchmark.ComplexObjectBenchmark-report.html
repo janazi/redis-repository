@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Jnz.RedisRepository.Benchmark.ComplexObjectBenchmark-20241010-122710</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.22631.4317/23H2/2023Update/SunValley3)
+12th Gen Intel Core i9-12900H, 1 CPU, 20 logical and 14 physical cores
+.NET SDK 8.0.400
+  [Host]     : .NET 8.0.8 (8.0.824.36612), X64 RyuJIT AVX2
+  DefaultJob : .NET 8.0.8 (8.0.824.36612), X64 RyuJIT AVX2
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method        </th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>WithDefaultDBAsync</td><td>619.9 &mu;s</td><td>12.32 &mu;s</td><td>24.89 &mu;s</td><td>1.00</td><td>0.06</td><td>2.35 KB</td><td>1.00</td>
+</tr><tr><td>PassingDbNumberAsync</td><td>654.3 &mu;s</td><td>15.88 &mu;s</td><td>45.82 &mu;s</td><td>1.06</td><td>0.09</td><td>2.35 KB</td><td>1.00</td>
+</tr></tbody></table>
+</body>
+</html>

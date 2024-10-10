@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28917.181
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jnz.RedisRepository.Benchmark", "benchmark\RedisLock\Jnz.RedisRepository.Benchmark.csproj", "{C8D025F9-F9D0-43EA-9179-14E8776F5AE1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jnz.RedisRepository", "src\RedisManager\Jnz.RedisRepository.csproj", "{A802141E-DC3E-4474-86C7-2FB0686431D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jnz.RedisRepository-Deprecated", "src\RedisManager\Jnz.RedisRepository-Deprecated.csproj", "{A802141E-DC3E-4474-86C7-2FB0686431D4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jnz.RedisRepository.Tests", "tests\RedisManager.Tests\Jnz.RedisRepository.Tests.csproj", "{7509A640-2CD1-4F03-B2EF-CEF3C05B0EFB}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{85EDCFE6-A711-4273-9FD4-867392986E4B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmark", "benchmark", "{B2002B7B-1CE3-445D-9035-E20481D36C0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jnz.RedisRepository", "Jnz.RedisRepository\Jnz.RedisRepository.csproj", "{DB2D48D7-C791-489B-8EF2-1E39F68D0BA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{7509A640-2CD1-4F03-B2EF-CEF3C05B0EFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7509A640-2CD1-4F03-B2EF-CEF3C05B0EFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7509A640-2CD1-4F03-B2EF-CEF3C05B0EFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB2D48D7-C791-489B-8EF2-1E39F68D0BA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB2D48D7-C791-489B-8EF2-1E39F68D0BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB2D48D7-C791-489B-8EF2-1E39F68D0BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB2D48D7-C791-489B-8EF2-1E39F68D0BA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,6 +47,7 @@ Global
 		{C8D025F9-F9D0-43EA-9179-14E8776F5AE1} = {B2002B7B-1CE3-445D-9035-E20481D36C0D}
 		{A802141E-DC3E-4474-86C7-2FB0686431D4} = {545F570B-2E50-448D-AEF8-15D1BB19EA03}
 		{7509A640-2CD1-4F03-B2EF-CEF3C05B0EFB} = {85EDCFE6-A711-4273-9FD4-867392986E4B}
+		{DB2D48D7-C791-489B-8EF2-1E39F68D0BA7} = {545F570B-2E50-448D-AEF8-15D1BB19EA03}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6D66290F-48D4-460A-A5BC-F1B1FB8F15ED}

@@ -1,6 +1,7 @@
 ﻿using Jnz.RedisRepository.Interfaces;
 using MessagePack;
 using MessagePack.Resolvers;
+using System.Runtime.CompilerServices;
 
 namespace Jnz.RedisRepository
 {
