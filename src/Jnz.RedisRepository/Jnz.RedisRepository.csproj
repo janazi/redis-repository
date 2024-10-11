@@ -3,32 +3,29 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings> 
-    <Nullable>enable</Nullable>
-    <PackageId>Jnz.RedisRepository</PackageId>
-    <Version>3</Version>
-    <AssemblyVersion>3</AssemblyVersion>
-    <Authors>Marcelo Giannasi</Authors>
-    <Company>Jnz Tech</Company>
-    <PackageDescription>Redis Repository</PackageDescription>
-    <RepositoryUrl>https://github.com/janazi/redis-repository</RepositoryUrl>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>
-      This package intend to incapsulate the use of Redis and Distributed Lock.
-    </Description>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Nullable>enable</Nullable> 
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild> 
+    <PackageId>Jnz.RedisRepository</PackageId> 
+    <Version>3</Version> 
+    <Authors>Marcelo Giannasi</Authors> 
+    <Company>Jnz Services</Company> 
+    <Description>This package intend to incapsulate the use of Redis and Distributed Lock.
+</Description> 
+    <RepositoryUrl>https://github.com/janazi/redis-repository</RepositoryUrl> 
+    <PackageReadmeFile>README.md</PackageReadmeFile> 
+    <Title>Jnz Redis Repository</Title>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.1" />
     <PackageReference Include="StackExchange.Redis" Version="2.8.16" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>
