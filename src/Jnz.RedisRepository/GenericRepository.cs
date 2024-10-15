@@ -88,4 +88,18 @@ public partial class RedisRepository(IConnectionMultiplexer connectionMultiplexe
         return isLockReleased;
     }
 
+    public async Task<T?> SetLockAndGetAsync<T>(string key, TimeSpan lockTimeToLive, int databaseNumber = 0)
+    {
+        var db = connectionMultiplexer.GetDatabase(databaseNumber);
+        var bytes = await db.StringGetAsync(key);
+        var keyLock = $"{KeyLockDefaultPrefix}:{key}";
+        var lockValue = Environment.MachineName;
+
+        var isLocked = await db.LockTakeAsync(keyLock, lockValue, lockTimeToLive);
+        if (isLocked)
+            return await GetAsync<T>(key);
+
+        throw new KeyLockedException($"Failed to acquire lock for key {key}");
+    }
+
 }
