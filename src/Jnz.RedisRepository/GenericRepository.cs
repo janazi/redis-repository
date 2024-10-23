@@ -97,7 +97,7 @@ public partial class RedisRepository(IConnectionMultiplexer connectionMultiplexe
 
         var isLocked = await db.LockTakeAsync(keyLock, lockValue, lockTimeToLive);
         if (isLocked)
-            return await GetAsync<T>(key);
+            return await GetAsync<T>(key, databaseNumber);
 
         throw new KeyLockedException($"Failed to acquire lock for key {key}");
     }

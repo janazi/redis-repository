@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable> 
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild> 
     <PackageId>Jnz.RedisRepository</PackageId> 
-    <Version>3.0.1</Version> 
+    <Version>3.0.2</Version> 
     <Authors>Marcelo Giannasi</Authors> 
     <Company>Jnz Services</Company> 
     <Description>This package intend to incapsulate the use of Redis and Distributed Lock.
